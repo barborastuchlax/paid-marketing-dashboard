@@ -51,7 +51,15 @@ def clean_numeric(val) -> float:
 
 
 def parse(file_content: bytes) -> list[NormalizedCampaign]:
-    text = file_content.decode('utf-8-sig')
+    # Try multiple encodings — LinkedIn exports can be UTF-8, UTF-8-BOM, or UTF-16
+    for encoding in ('utf-8-sig', 'utf-16', 'latin-1'):
+        try:
+            text = file_content.decode(encoding)
+            break
+        except (UnicodeDecodeError, UnicodeError):
+            continue
+    else:
+        text = file_content.decode('utf-8', errors='replace')
     df = pd.read_csv(io.StringIO(text))
     df.columns = df.columns.str.strip()
 
