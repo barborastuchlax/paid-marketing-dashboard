@@ -1,0 +1,58 @@
+# Paid Marketing Performance Analyzer
+
+## Project Overview
+A web dashboard that accepts Google Ads and LinkedIn Ads CSV exports, analyzes campaign performance, and displays results. Built with FastAPI + vanilla JS, deployed on Vercel.
+
+## Architecture
+- **Backend**: FastAPI (`main.py`) — serves HTML template and `/api/analyze` endpoint
+- **Frontend**: Single HTML template (`templates/index.html`) with ALL CSS and JS inlined (Vercel constraint — static files don't serve properly, so everything must be inlined)
+- **Parsers**: `backend/parsers/` — google_ads.py, linkedin_ads.py, linkedin_demographics.py
+- **Analysis**: `backend/metrics.py`, `backend/scorecard.py`, `backend/recommendations.py`
+- **Models**: `backend/models.py` — Pydantic models (NormalizedCampaign, DemographicEntry, DemographicsData)
+
+## Key Constraints
+- **Vercel deployment**: All CSS and JS MUST be inlined in `templates/index.html`. Do NOT create separate .css or .js files for production — they won't load on Vercel.
+- **`vercel.json`** routes everything through `main.py`
+- **CSV parsing** must handle multiple encodings (UTF-8, UTF-8-BOM, UTF-16, Latin-1), metadata header rows, and different delimiters (comma, tab, semicolon)
+
+## How to Run Locally
+```bash
+cd /home/user/paid-marketing-dashboard
+pip install -r requirements.txt
+python main.py  # starts on http://localhost:8000
+```
+
+## API
+- `GET /` — serves the dashboard HTML
+- `GET /api/health` — health check
+- `POST /api/analyze` — accepts multipart form with:
+  - `google_ads_csv` (optional file)
+  - `linkedin_ads_csv` (optional file)
+  - `linkedin_demographics_csv` (optional file)
+  - `avg_customer_ltv` (float)
+  - `monthly_revenue` (float)
+
+## File Structure
+```
+main.py                          # FastAPI app entry point
+vercel.json                      # Vercel deployment config
+requirements.txt                 # Python dependencies
+templates/index.html             # Full app UI (HTML + inlined CSS + inlined JS, ~1600 lines)
+backend/
+  models.py                      # Pydantic data models
+  metrics.py                     # Metric calculations
+  scorecard.py                   # Performance grading
+  recommendations.py             # Recommendation engine
+  parsers/
+    google_ads.py                # Google Ads CSV parser
+    linkedin_ads.py              # LinkedIn Ads CSV parser
+    linkedin_demographics.py     # LinkedIn Demographics CSV parser
+static/js/                       # JS source files (reference only — production uses inlined versions in index.html)
+test_data/                       # Sample CSV files for testing
+```
+
+## Frontend Tabs
+The dashboard has 5 tabs: Dashboard (KPIs, funnel, charts), Report (campaign table), Scorecard (grades), Demographics (LinkedIn audience data), Recommendations (prioritized action items).
+
+## GitHub
+Repo: `barborastuchlax/paid-marketing-dashboard` — auto-deploys to Vercel on push to main.
