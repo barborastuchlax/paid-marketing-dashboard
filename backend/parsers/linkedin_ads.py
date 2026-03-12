@@ -1,3 +1,4 @@
+import csv
 import pandas as pd
 import io
 from backend.models import NormalizedCampaign
@@ -60,7 +61,22 @@ def parse(file_content: bytes) -> list[NormalizedCampaign]:
             continue
     else:
         text = file_content.decode('utf-8', errors='replace')
-    df = pd.read_csv(io.StringIO(text))
+    # Find the header row (LinkedIn exports often have metadata rows at the top)
+    lines = text.strip().split('\n')
+    header_row = 0
+    for i, line in enumerate(lines):
+        lower = line.lower()
+        if ('campaign' in lower or 'campaign name' in lower) and \
+           ('impressions' in lower or 'clicks' in lower or 'spend' in lower or 'cost' in lower):
+            header_row = i
+            break
+
+    # Auto-detect delimiter (comma vs tab)
+    sample = lines[header_row] if header_row < len(lines) else lines[0]
+    dialect = csv.Sniffer().sniff(sample, delimiters=',\t;|')
+    sep = dialect.delimiter
+
+    df = pd.read_csv(io.StringIO(text), skiprows=header_row, sep=sep)
     df.columns = df.columns.str.strip()
 
     # Map columns
