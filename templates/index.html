@@ -4,7 +4,539 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Marketing Performance Analyzer</title>
-    <link rel="stylesheet" href="/static/css/styles.css">
+    <style>
+/* ===== Reset & Base ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: #f5f6fa;
+    color: #1a1f36;
+    line-height: 1.5;
+    min-height: 100vh;
+}
+
+/* ===== Header ===== */
+header {
+    background: #1a1f36;
+    color: #fff;
+    padding: 0 24px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+}
+.header-inner {
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.logo h1 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+.header-subtitle {
+    font-size: 0.8rem;
+    opacity: 0.6;
+}
+
+/* ===== Main ===== */
+main {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+/* ===== Upload Section ===== */
+.upload-section {
+    display: flex;
+    justify-content: center;
+    padding-top: 40px;
+}
+.upload-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+    padding: 40px;
+    max-width: 680px;
+    width: 100%;
+}
+.upload-card h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+.upload-desc {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin-bottom: 28px;
+}
+.file-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+.file-drop-zone {
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    padding: 28px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+.file-drop-zone:hover, .file-drop-zone.dragover {
+    border-color: #2563eb;
+    background: #eff6ff;
+}
+.file-drop-zone.has-file {
+    border-color: #059669;
+    background: #ecfdf5;
+}
+.file-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #374151;
+}
+.file-name {
+    font-size: 0.78rem;
+    color: #9ca3af;
+}
+.file-drop-zone.has-file .file-name {
+    color: #059669;
+}
+
+/* ===== Advanced Settings ===== */
+.advanced-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 16px;
+    user-select: none;
+    border: none;
+    background: none;
+    padding: 0;
+}
+.advanced-toggle:hover { color: #374151; }
+.advanced-toggle svg {
+    transition: transform 0.2s;
+}
+.advanced-toggle.open svg {
+    transform: rotate(90deg);
+}
+.advanced-content {
+    display: none;
+    margin-bottom: 24px;
+}
+.advanced-content.open {
+    display: block;
+}
+.advanced-hint {
+    font-size: 0.78rem;
+    color: #9ca3af;
+    margin-bottom: 12px;
+}
+.extra-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+.input-group label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 4px;
+}
+.input-group .input-hint {
+    display: block;
+    font-size: 0.72rem;
+    color: #9ca3af;
+    margin-bottom: 4px;
+}
+.input-group input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+}
+.input-group input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 8px;
+}
+.btn-primary:hover { background: #1d4ed8; }
+.btn-primary:disabled { background: #93c5fd; cursor: not-allowed; }
+.error-text {
+    color: #dc2626;
+    font-size: 0.85rem;
+    margin-top: 12px;
+    text-align: center;
+}
+
+/* ===== Tab Bar ===== */
+.tab-bar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border-bottom: 2px solid #e5e7eb;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+.tab {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color 0.2s, border-color 0.2s;
+}
+.tab:hover { color: #1a1f36; }
+.tab.active {
+    color: #2563eb;
+    border-bottom-color: #2563eb;
+    font-weight: 600;
+}
+.btn-secondary {
+    padding: 6px 16px;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    color: #374151;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-secondary:hover { background: #e5e7eb; }
+.btn-new-analysis { margin-left: auto; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ===== KPI Tiles ===== */
+.kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.kpi-tile {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.kpi-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 4px;
+}
+.kpi-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1a1f36;
+    line-height: 1.2;
+}
+.kpi-sub {
+    font-size: 0.78rem;
+    color: #9ca3af;
+    margin-top: 4px;
+}
+
+/* ===== Chart Cards ===== */
+.chart-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.chart-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.chart-card h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #374151;
+}
+.chart-card canvas { max-height: 300px; }
+.chart-full { grid-column: 1 / -1; }
+
+/* ===== Tables ===== */
+.table-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 24px;
+    overflow-x: auto;
+}
+.table-card h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #374151;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+thead th {
+    text-align: left;
+    padding: 10px 12px;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 2px solid #e5e7eb;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+}
+thead th:hover { color: #2563eb; }
+tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f3f4f6;
+    white-space: nowrap;
+}
+tbody tr:nth-child(even) { background: #fafbfc; }
+tbody tr:hover { background: #f0f4ff; }
+
+/* ===== Scorecard ===== */
+.overall-grade-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    text-align: center;
+    margin-bottom: 24px;
+}
+.grade-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+}
+.grade-circle.grade-a { background: #059669; }
+.grade-circle.grade-b { background: #2563eb; }
+.grade-circle.grade-c { background: #d97706; }
+.grade-circle.grade-d { background: #dc2626; }
+.grade-circle.grade-f { background: #7f1d1d; }
+.grade-title { font-size: 1rem; font-weight: 600; color: #374151; }
+.grade-subtitle { font-size: 0.85rem; color: #6b7280; }
+.metric-grades {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.metric-grade-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.metric-grade-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.metric-grade-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+.grade-pill {
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #fff;
+}
+.grade-pill.grade-a { background: #059669; }
+.grade-pill.grade-b { background: #2563eb; }
+.grade-pill.grade-c { background: #d97706; }
+.grade-pill.grade-d { background: #dc2626; }
+.grade-pill.grade-f { background: #7f1d1d; }
+.grade-pill.grade-na { background: #9ca3af; }
+.metric-grade-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1a1f36;
+    margin-bottom: 8px;
+}
+.progress-bar {
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+.progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s ease;
+}
+.progress-fill.grade-a { background: #059669; }
+.progress-fill.grade-b { background: #2563eb; }
+.progress-fill.grade-c { background: #d97706; }
+.progress-fill.grade-d { background: #dc2626; }
+.progress-fill.grade-f { background: #7f1d1d; }
+.metric-grade-label { font-size: 0.78rem; color: #6b7280; }
+
+/* ===== Recommendations ===== */
+.recs-section { margin-bottom: 24px; }
+.recs-section-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 12px;
+    padding-left: 12px;
+}
+.recs-section-title.priority-high { color: #dc2626; }
+.recs-section-title.priority-medium { color: #d97706; }
+.recs-section-title.priority-low { color: #2563eb; }
+.rec-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px 20px 20px 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 12px;
+    border-left: 4px solid;
+}
+.rec-card.priority-high { border-left-color: #dc2626; }
+.rec-card.priority-medium { border-left-color: #d97706; }
+.rec-card.priority-low { border-left-color: #2563eb; }
+.rec-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+.rec-title { font-size: 0.95rem; font-weight: 600; color: #1a1f36; }
+.rec-category {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: #f3f4f6;
+    color: #6b7280;
+    white-space: nowrap;
+}
+.rec-detail { font-size: 0.87rem; color: #4b5563; line-height: 1.6; margin-bottom: 8px; }
+.rec-campaigns { display: flex; gap: 6px; flex-wrap: wrap; }
+.rec-campaign-tag {
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    background: #eff6ff;
+    color: #2563eb;
+    border-radius: 4px;
+}
+.rec-impact { font-size: 0.8rem; font-weight: 500; color: #059669; margin-top: 6px; }
+
+/* ===== Report ===== */
+.exec-summary {
+    background: #fff;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 24px;
+}
+.exec-summary h3 { font-size: 1rem; font-weight: 600; margin-bottom: 12px; color: #374151; }
+.exec-summary p { font-size: 0.9rem; color: #4b5563; line-height: 1.7; }
+.btn-print {
+    padding: 8px 20px;
+    background: #1a1f36;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+.btn-print:hover { background: #2d3452; }
+
+/* ===== Utility ===== */
+.hidden { display: none !important; }
+.text-right { text-align: right; }
+.channel-tag {
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+.channel-tag.google { background: #fef3c7; color: #92400e; }
+.channel-tag.linkedin { background: #dbeafe; color: #1e40af; }
+
+/* ===== Print ===== */
+@media print {
+    header, .tab-bar, .btn-print, .btn-new-analysis, #upload-section { display: none !important; }
+    body { background: #fff; }
+    .tab-content { display: block !important; }
+    .chart-card canvas { max-height: 250px; }
+    .kpi-tile, .chart-card, .table-card, .exec-summary, .rec-card, .metric-grade-card, .overall-grade-card {
+        box-shadow: none;
+        border: 1px solid #e5e7eb;
+        break-inside: avoid;
+    }
+}
+@media (max-width: 768px) {
+    .file-inputs, .extra-inputs, .chart-row { grid-template-columns: 1fr; }
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .upload-card { padding: 24px; }
+}
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
 <body>
@@ -53,14 +585,24 @@
                         </div>
                     </div>
 
-                    <div class="extra-inputs">
-                        <div class="input-group">
-                            <label for="ltv-input">Avg. Customer LTV ($)</label>
-                            <input type="number" id="ltv-input" placeholder="e.g. 500" min="0" step="1">
-                        </div>
-                        <div class="input-group">
-                            <label for="revenue-input">Monthly Revenue ($)</label>
-                            <input type="number" id="revenue-input" placeholder="e.g. 50000" min="0" step="1">
+                    <button type="button" class="advanced-toggle" id="advanced-toggle">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                        Advanced settings (optional)
+                    </button>
+
+                    <div class="advanced-content" id="advanced-content">
+                        <p class="advanced-hint">These are optional. Fill them in to get additional metrics like LTV:CAC ratio and Marketing Efficiency Ratio.</p>
+                        <div class="extra-inputs">
+                            <div class="input-group">
+                                <label for="ltv-input">Avg. Customer Lifetime Value ($)</label>
+                                <span class="input-hint">How much revenue one customer generates over their lifetime</span>
+                                <input type="number" id="ltv-input" placeholder="e.g. 500" min="0" step="1">
+                            </div>
+                            <div class="input-group">
+                                <label for="revenue-input">Monthly Revenue ($)</label>
+                                <span class="input-hint">Your total monthly revenue from all sources</span>
+                                <input type="number" id="revenue-input" placeholder="e.g. 50000" min="0" step="1">
+                            </div>
                         </div>
                     </div>
 
@@ -90,10 +632,702 @@
         </section>
     </main>
 
-    <script src="/static/js/app.js"></script>
-    <script src="/static/js/dashboard.js"></script>
-    <script src="/static/js/report.js"></script>
-    <script src="/static/js/scorecard.js"></script>
-    <script src="/static/js/recommendations.js"></script>
+    <script>
+// ===== Global State =====
+let analysisData = null;
+let chartInstances = [];
+
+// ===== Helpers =====
+function fmt(n, decimals = 0) {
+    if (n == null) return 'N/A';
+    return n.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
+function fmtCurrency(n) {
+    if (n == null) return 'N/A';
+    if (Math.abs(n) >= 1000) return '$' + fmt(n, 0);
+    return '$' + fmt(n, 2);
+}
+function fmtPct(n) {
+    if (n == null) return 'N/A';
+    return (n * 100).toFixed(2) + '%';
+}
+function fmtPctRaw(n) {
+    if (n == null) return 'N/A';
+    return n.toFixed(2) + '%';
+}
+function channelLabel(ch) {
+    return ch === 'google_ads' ? 'Google Ads' : ch === 'linkedin_ads' ? 'LinkedIn Ads' : ch;
+}
+function channelTagClass(ch) {
+    return ch === 'google_ads' ? 'google' : 'linkedin';
+}
+function gradeClass(grade) {
+    if (!grade || grade === 'N/A') return 'grade-na';
+    const l = grade[0].toUpperCase();
+    if (l === 'A') return 'grade-a';
+    if (l === 'B') return 'grade-b';
+    if (l === 'C') return 'grade-c';
+    if (l === 'D') return 'grade-d';
+    return 'grade-f';
+}
+function destroyCharts() {
+    chartInstances.forEach(c => c.destroy());
+    chartInstances = [];
+}
+
+// ===== File Upload Logic =====
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('upload-form');
+    const googleInput = document.getElementById('google-csv');
+    const linkedinInput = document.getElementById('linkedin-csv');
+
+    // Advanced settings toggle
+    const advToggle = document.getElementById('advanced-toggle');
+    const advContent = document.getElementById('advanced-content');
+    if (advToggle && advContent) {
+        advToggle.addEventListener('click', () => {
+            advToggle.classList.toggle('open');
+            advContent.classList.toggle('open');
+        });
+    }
+
+    // File input change handlers
+    googleInput.addEventListener('change', () => updateFileLabel(googleInput, 'google-file-name', 'google-drop'));
+    linkedinInput.addEventListener('change', () => updateFileLabel(linkedinInput, 'linkedin-file-name', 'linkedin-drop'));
+
+    // Drag and drop
+    [['google-drop', googleInput], ['linkedin-drop', linkedinInput]].forEach(([id, input]) => {
+        const zone = document.getElementById(id);
+        zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+        zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+        zone.addEventListener('drop', e => {
+            e.preventDefault();
+            zone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                input.files = e.dataTransfer.files;
+                updateFileLabel(input, id === 'google-drop' ? 'google-file-name' : 'linkedin-file-name', id);
+            }
+        });
+    });
+
+    // Form submit
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const errEl = document.getElementById('upload-error');
+        errEl.classList.add('hidden');
+
+        const googleFile = googleInput.files[0];
+        const linkedinFile = linkedinInput.files[0];
+
+        if (!googleFile && !linkedinFile) {
+            errEl.textContent = 'Please upload at least one CSV file.';
+            errEl.classList.remove('hidden');
+            return;
+        }
+
+        const btn = document.getElementById('analyze-btn');
+        btn.disabled = true;
+        document.getElementById('btn-text').classList.add('hidden');
+        document.getElementById('btn-loading').classList.remove('hidden');
+
+        const formData = new FormData();
+        if (googleFile) formData.append('google_ads_csv', googleFile);
+        if (linkedinFile) formData.append('linkedin_ads_csv', linkedinFile);
+        formData.append('avg_customer_ltv', document.getElementById('ltv-input').value || '0');
+        formData.append('monthly_revenue', document.getElementById('revenue-input').value || '0');
+
+        try {
+            const res = await fetch('/api/analyze', { method: 'POST', body: formData });
+            const data = await res.json();
+
+            if (!res.ok) {
+                errEl.textContent = data.error || 'Analysis failed. Please check your CSV format.';
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            analysisData = data;
+            showResults();
+        } catch (err) {
+            errEl.textContent = 'Network error. Please try again.';
+            errEl.classList.remove('hidden');
+        } finally {
+            btn.disabled = false;
+            document.getElementById('btn-text').classList.remove('hidden');
+            document.getElementById('btn-loading').classList.add('hidden');
+        }
+    });
+
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+        });
+    });
+
+    // New analysis
+    document.getElementById('new-analysis-btn').addEventListener('click', () => {
+        destroyCharts();
+        analysisData = null;
+        document.getElementById('upload-section').classList.remove('hidden');
+        document.getElementById('results-section').classList.add('hidden');
+    });
+});
+
+function updateFileLabel(input, nameId, zoneId) {
+    const nameEl = document.getElementById(nameId);
+    const zone = document.getElementById(zoneId);
+    if (input.files.length) {
+        nameEl.textContent = input.files[0].name;
+        zone.classList.add('has-file');
+    } else {
+        nameEl.textContent = 'No file chosen';
+        zone.classList.remove('has-file');
+    }
+}
+
+function showResults() {
+    destroyCharts();
+    document.getElementById('upload-section').classList.add('hidden');
+    document.getElementById('results-section').classList.remove('hidden');
+
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelector('[data-tab="dashboard"]').classList.add('active');
+    document.getElementById('tab-dashboard').classList.add('active');
+
+    renderDashboard(analysisData);
+    renderReport(analysisData);
+    renderScorecard(analysisData);
+    renderRecommendations(analysisData);
+}
+
+// ===== Dashboard =====
+Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.color = '#6b7280';
+
+const COLORS = {
+    google: '#f59e0b',
+    linkedin: '#3b82f6',
+    palette: ['#2563eb', '#f59e0b', '#059669', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#6366f1'],
+};
+
+function renderDashboard(data) {
+    const container = document.getElementById('tab-dashboard');
+    const s = data.summary;
+
+    let kpis = `
+        <div class="kpi-row">
+            <div class="kpi-tile">
+                <div class="kpi-label">Total Spend</div>
+                <div class="kpi-value">${fmtCurrency(s.total_spend)}</div>
+                <div class="kpi-sub">${fmt(Object.keys(data.by_channel).length)} channel${Object.keys(data.by_channel).length > 1 ? 's' : ''}</div>
+            </div>
+            <div class="kpi-tile">
+                <div class="kpi-label">Total Conversions</div>
+                <div class="kpi-value">${fmt(s.total_conversions)}</div>
+                <div class="kpi-sub">${fmt(s.total_clicks)} clicks</div>
+            </div>
+            <div class="kpi-tile">
+                <div class="kpi-label">Blended CPA</div>
+                <div class="kpi-value">${fmtCurrency(s.blended_cpa)}</div>
+                <div class="kpi-sub">Cost per acquisition</div>
+            </div>
+            <div class="kpi-tile">
+                <div class="kpi-label">Blended CTR</div>
+                <div class="kpi-value">${s.blended_ctr != null ? (s.blended_ctr * 100).toFixed(2) + '%' : 'N/A'}</div>
+                <div class="kpi-sub">${fmt(s.total_impressions)} impressions</div>
+            </div>
+            <div class="kpi-tile">
+                <div class="kpi-label">ROAS</div>
+                <div class="kpi-value">${s.blended_roas != null ? s.blended_roas.toFixed(2) + 'x' : 'N/A'}</div>
+                <div class="kpi-sub">${s.blended_roas != null ? fmtCurrency(s.conversion_value) + ' revenue' : 'No value data'}</div>
+            </div>`;
+
+    if (data.ltv_cac_ratio != null) {
+        kpis += `
+            <div class="kpi-tile">
+                <div class="kpi-label">LTV:CAC Ratio</div>
+                <div class="kpi-value">${data.ltv_cac_ratio.toFixed(1)}:1</div>
+                <div class="kpi-sub">${data.ltv_cac_ratio >= 3 ? 'Healthy' : 'Below target (3:1)'}</div>
+            </div>`;
+    }
+
+    kpis += '</div>';
+
+    let charts = '<div class="chart-row">';
+    if (Object.keys(data.by_channel).length >= 2) {
+        charts += `
+            <div class="chart-card">
+                <h3>Spend & Conversions by Channel</h3>
+                <canvas id="chart-channel-compare"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>Spend Distribution</h3>
+                <canvas id="chart-spend-dist"></canvas>
+            </div>`;
+    }
+    charts += '</div><div class="chart-row">';
+    charts += `
+        <div class="chart-card">
+            <h3>CPA by Campaign</h3>
+            <canvas id="chart-cpa-campaign"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>CTR by Campaign</h3>
+            <canvas id="chart-ctr-campaign"></canvas>
+        </div>`;
+    charts += '</div>';
+    charts += `
+        <div class="chart-row">
+            <div class="chart-card chart-full">
+                <h3>Conversion Rate by Campaign</h3>
+                <canvas id="chart-conv-rate"></canvas>
+            </div>
+        </div>`;
+
+    container.innerHTML = kpis + charts;
+
+    const campaigns = data.by_campaign;
+
+    if (Object.keys(data.by_channel).length >= 2) {
+        const channelNames = Object.keys(data.by_channel).map(channelLabel);
+        const channelSpends = Object.values(data.by_channel).map(c => c.total_spend);
+        const channelConvs = Object.values(data.by_channel).map(c => c.total_conversions);
+
+        chartInstances.push(new Chart(document.getElementById('chart-channel-compare'), {
+            type: 'bar',
+            data: {
+                labels: channelNames,
+                datasets: [
+                    { label: 'Spend', data: channelSpends, backgroundColor: '#ef4444', borderRadius: 4 },
+                    { label: 'Conversions', data: channelConvs, backgroundColor: '#059669', borderRadius: 4 },
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } },
+                scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } } },
+            }
+        }));
+
+        const chColors = Object.keys(data.by_channel).map(ch => ch === 'google_ads' ? COLORS.google : COLORS.linkedin);
+        chartInstances.push(new Chart(document.getElementById('chart-spend-dist'), {
+            type: 'doughnut',
+            data: {
+                labels: channelNames,
+                datasets: [{ data: channelSpends, backgroundColor: chColors, borderWidth: 0 }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } },
+                cutout: '60%',
+            }
+        }));
+    }
+
+    const campaignsWithConv = campaigns.filter(c => c.conversions > 0);
+    const cpaSorted = [...campaignsWithConv].sort((a, b) => b.cpa - a.cpa);
+    const cpaColors = cpaSorted.map(c => c.channel === 'google_ads' ? COLORS.google : COLORS.linkedin);
+
+    chartInstances.push(new Chart(document.getElementById('chart-cpa-campaign'), {
+        type: 'bar',
+        data: {
+            labels: cpaSorted.map(c => c.campaign_name.length > 30 ? c.campaign_name.slice(0, 28) + '...' : c.campaign_name),
+            datasets: [{ label: 'CPA ($)', data: cpaSorted.map(c => c.cpa), backgroundColor: cpaColors, borderRadius: 4 }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } } },
+        }
+    }));
+
+    const ctrSorted = [...campaigns].sort((a, b) => b.ctr - a.ctr);
+    const ctrColors = ctrSorted.map(c => c.channel === 'google_ads' ? COLORS.google : COLORS.linkedin);
+
+    chartInstances.push(new Chart(document.getElementById('chart-ctr-campaign'), {
+        type: 'bar',
+        data: {
+            labels: ctrSorted.map(c => c.campaign_name.length > 30 ? c.campaign_name.slice(0, 28) + '...' : c.campaign_name),
+            datasets: [{ label: 'CTR (%)', data: ctrSorted.map(c => (c.ctr * 100).toFixed(2)), backgroundColor: ctrColors, borderRadius: 4 }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } } },
+        }
+    }));
+
+    const crSorted = [...campaignsWithConv].sort((a, b) => b.conversion_rate - a.conversion_rate);
+    const crColors = crSorted.map((_, i) => COLORS.palette[i % COLORS.palette.length]);
+
+    chartInstances.push(new Chart(document.getElementById('chart-conv-rate'), {
+        type: 'bar',
+        data: {
+            labels: crSorted.map(c => c.campaign_name.length > 35 ? c.campaign_name.slice(0, 33) + '...' : c.campaign_name),
+            datasets: [{ label: 'Conv. Rate (%)', data: crSorted.map(c => (c.conversion_rate * 100).toFixed(2)), backgroundColor: crColors, borderRadius: 4 }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } } },
+        }
+    }));
+}
+
+// ===== Report =====
+function renderReport(data) {
+    const container = document.getElementById('tab-report');
+    const s = data.summary;
+    const campaigns = data.by_campaign;
+    const channels = Object.keys(data.by_channel);
+
+    const numCampaigns = campaigns.length;
+    const channelList = channels.map(channelLabel).join(' and ');
+    let summaryText = `Across ${numCampaigns} campaign${numCampaigns > 1 ? 's' : ''} on ${channelList}, `;
+    summaryText += `total spend was ${fmtCurrency(s.total_spend)} generating ${fmt(s.total_conversions)} conversions `;
+    summaryText += `at a blended CPA of ${fmtCurrency(s.blended_cpa)}.`;
+
+    if (s.blended_ctr != null) {
+        summaryText += ` Overall CTR was ${(s.blended_ctr * 100).toFixed(2)}%`;
+        if (s.blended_conversion_rate != null) {
+            summaryText += ` with a ${(s.blended_conversion_rate * 100).toFixed(2)}% conversion rate`;
+        }
+        summaryText += '.';
+    }
+
+    if (data.ltv_cac_ratio != null) {
+        summaryText += ` The LTV:CAC ratio is ${data.ltv_cac_ratio.toFixed(1)}:1${data.ltv_cac_ratio >= 3 ? ', which is healthy' : ', which is below the recommended 3:1 target'}.`;
+    }
+
+    if (s.blended_roas != null) {
+        summaryText += ` ROAS stands at ${s.blended_roas.toFixed(2)}x.`;
+    }
+
+    let html = `
+        <button class="btn-print" onclick="window.print()">Print Report</button>
+        <div class="exec-summary">
+            <h3>Executive Summary</h3>
+            <p>${summaryText}</p>
+        </div>`;
+
+    if (channels.length >= 2) {
+        html += `
+        <div class="table-card">
+            <h3>Channel Comparison</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        ${channels.map(ch => `<th class="text-right">${channelLabel(ch)}</th>`).join('')}
+                        <th class="text-right">Blended</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Spend</td>${channels.map(ch => `<td class="text-right">${fmtCurrency(data.by_channel[ch].total_spend)}</td>`).join('')}<td class="text-right"><strong>${fmtCurrency(s.total_spend)}</strong></td></tr>
+                    <tr><td>Impressions</td>${channels.map(ch => `<td class="text-right">${fmt(data.by_channel[ch].total_impressions)}</td>`).join('')}<td class="text-right"><strong>${fmt(s.total_impressions)}</strong></td></tr>
+                    <tr><td>Clicks</td>${channels.map(ch => `<td class="text-right">${fmt(data.by_channel[ch].total_clicks)}</td>`).join('')}<td class="text-right"><strong>${fmt(s.total_clicks)}</strong></td></tr>
+                    <tr><td>CTR</td>${channels.map(ch => `<td class="text-right">${data.by_channel[ch].blended_ctr != null ? (data.by_channel[ch].blended_ctr * 100).toFixed(2) + '%' : 'N/A'}</td>`).join('')}<td class="text-right"><strong>${s.blended_ctr != null ? (s.blended_ctr * 100).toFixed(2) + '%' : 'N/A'}</strong></td></tr>
+                    <tr><td>Avg CPC</td>${channels.map(ch => `<td class="text-right">${fmtCurrency(data.by_channel[ch].avg_cpc)}</td>`).join('')}<td class="text-right"><strong>${fmtCurrency(s.avg_cpc)}</strong></td></tr>
+                    <tr><td>Conversions</td>${channels.map(ch => `<td class="text-right">${fmt(data.by_channel[ch].total_conversions)}</td>`).join('')}<td class="text-right"><strong>${fmt(s.total_conversions)}</strong></td></tr>
+                    <tr><td>CPA</td>${channels.map(ch => `<td class="text-right">${fmtCurrency(data.by_channel[ch].blended_cpa)}</td>`).join('')}<td class="text-right"><strong>${fmtCurrency(s.blended_cpa)}</strong></td></tr>
+                    <tr><td>Conv. Rate</td>${channels.map(ch => `<td class="text-right">${data.by_channel[ch].blended_conversion_rate != null ? (data.by_channel[ch].blended_conversion_rate * 100).toFixed(2) + '%' : 'N/A'}</td>`).join('')}<td class="text-right"><strong>${s.blended_conversion_rate != null ? (s.blended_conversion_rate * 100).toFixed(2) + '%' : 'N/A'}</strong></td></tr>
+                    <tr><td>ROAS</td>${channels.map(ch => `<td class="text-right">${data.by_channel[ch].blended_roas != null ? data.by_channel[ch].blended_roas.toFixed(2) + 'x' : 'N/A'}</td>`).join('')}<td class="text-right"><strong>${s.blended_roas != null ? s.blended_roas.toFixed(2) + 'x' : 'N/A'}</strong></td></tr>
+                    <tr><td>CPM</td>${channels.map(ch => `<td class="text-right">${fmtCurrency(data.by_channel[ch].cpm)}</td>`).join('')}<td class="text-right"><strong>${fmtCurrency(s.cpm)}</strong></td></tr>
+                </tbody>
+            </table>
+        </div>`;
+    }
+
+    html += `
+    <div class="table-card">
+        <h3>Campaign Details</h3>
+        <table id="campaign-table">
+            <thead>
+                <tr>
+                    <th data-sort="campaign_name">Campaign</th>
+                    <th data-sort="channel">Channel</th>
+                    <th data-sort="spend" class="text-right">Spend</th>
+                    <th data-sort="impressions" class="text-right">Impressions</th>
+                    <th data-sort="clicks" class="text-right">Clicks</th>
+                    <th data-sort="ctr" class="text-right">CTR</th>
+                    <th data-sort="avg_cpc" class="text-right">Avg CPC</th>
+                    <th data-sort="conversions" class="text-right">Conv.</th>
+                    <th data-sort="conversion_rate" class="text-right">Conv. Rate</th>
+                    <th data-sort="cpa" class="text-right">CPA</th>
+                    <th data-sort="roas" class="text-right">ROAS</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+    for (const c of campaigns) {
+        html += `
+                <tr>
+                    <td title="${c.campaign_name}">${c.campaign_name.length > 35 ? c.campaign_name.slice(0, 33) + '...' : c.campaign_name}</td>
+                    <td><span class="channel-tag ${channelTagClass(c.channel)}">${channelLabel(c.channel)}</span></td>
+                    <td class="text-right">${fmtCurrency(c.spend)}</td>
+                    <td class="text-right">${fmt(c.impressions)}</td>
+                    <td class="text-right">${fmt(c.clicks)}</td>
+                    <td class="text-right">${(c.ctr * 100).toFixed(2)}%</td>
+                    <td class="text-right">${fmtCurrency(c.avg_cpc)}</td>
+                    <td class="text-right">${fmt(c.conversions)}</td>
+                    <td class="text-right">${(c.conversion_rate * 100).toFixed(2)}%</td>
+                    <td class="text-right">${c.conversions > 0 ? fmtCurrency(c.cpa) : '-'}</td>
+                    <td class="text-right">${c.roas != null ? c.roas.toFixed(2) + 'x' : '-'}</td>
+                </tr>`;
+    }
+
+    html += `
+            </tbody>
+        </table>
+    </div>`;
+
+    container.innerHTML = html;
+    setupSortableTable('campaign-table', campaigns);
+}
+
+function setupSortableTable(tableId, campaigns) {
+    const table = document.getElementById(tableId);
+    if (!table) return;
+    let sortDir = {};
+
+    table.querySelectorAll('thead th[data-sort]').forEach(th => {
+        th.addEventListener('click', () => {
+            const key = th.dataset.sort;
+            sortDir[key] = !sortDir[key];
+            const dir = sortDir[key] ? 1 : -1;
+
+            const sorted = [...campaigns].sort((a, b) => {
+                let va = a[key], vb = b[key];
+                if (va == null) va = -Infinity;
+                if (vb == null) vb = -Infinity;
+                if (typeof va === 'string') return va.localeCompare(vb) * dir;
+                return (va - vb) * dir;
+            });
+
+            const tbody = table.querySelector('tbody');
+            tbody.innerHTML = '';
+            for (const c of sorted) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td title="${c.campaign_name}">${c.campaign_name.length > 35 ? c.campaign_name.slice(0, 33) + '...' : c.campaign_name}</td>
+                    <td><span class="channel-tag ${channelTagClass(c.channel)}">${channelLabel(c.channel)}</span></td>
+                    <td class="text-right">${fmtCurrency(c.spend)}</td>
+                    <td class="text-right">${fmt(c.impressions)}</td>
+                    <td class="text-right">${fmt(c.clicks)}</td>
+                    <td class="text-right">${(c.ctr * 100).toFixed(2)}%</td>
+                    <td class="text-right">${fmtCurrency(c.avg_cpc)}</td>
+                    <td class="text-right">${fmt(c.conversions)}</td>
+                    <td class="text-right">${(c.conversion_rate * 100).toFixed(2)}%</td>
+                    <td class="text-right">${c.conversions > 0 ? fmtCurrency(c.cpa) : '-'}</td>
+                    <td class="text-right">${c.roas != null ? c.roas.toFixed(2) + 'x' : '-'}</td>`;
+                tbody.appendChild(tr);
+            }
+        });
+    });
+}
+
+// ===== Scorecard =====
+function renderScorecard(data) {
+    const container = document.getElementById('tab-scorecard');
+    const sc = data.scorecard;
+
+    const metricLabels = {
+        roas: 'ROAS', cpa: 'CPA', ctr: 'CTR',
+        conversion_rate: 'Conversion Rate', ltv_cac_ratio: 'LTV:CAC Ratio',
+    };
+    const metricFormatters = {
+        roas: v => v != null ? v.toFixed(2) + 'x' : 'N/A',
+        cpa: v => v != null ? '$' + v.toFixed(2) : 'N/A',
+        ctr: v => v != null ? v.toFixed(2) + '%' : 'N/A',
+        conversion_rate: v => v != null ? v.toFixed(2) + '%' : 'N/A',
+        ltv_cac_ratio: v => v != null ? v.toFixed(1) + ':1' : 'N/A',
+    };
+
+    let html = `
+        <div class="overall-grade-card">
+            <div class="grade-circle ${gradeClass(sc.overall_grade)}">${sc.overall_grade}</div>
+            <div class="grade-title">Overall Marketing Health</div>
+            <div class="grade-subtitle">Score: ${sc.overall_score}/100</div>
+        </div>`;
+
+    html += '<div class="metric-grades">';
+    for (const [key, grade] of Object.entries(sc.grades)) {
+        const label = metricLabels[key] || key;
+        const formatter = metricFormatters[key] || (v => v != null ? v.toString() : 'N/A');
+        const gc = gradeClass(grade.grade);
+
+        html += `
+            <div class="metric-grade-card">
+                <div class="metric-grade-header">
+                    <span class="metric-grade-name">${label}</span>
+                    <span class="grade-pill ${gc}">${grade.grade}</span>
+                </div>
+                <div class="metric-grade-value">${formatter(grade.value)}</div>
+                <div class="progress-bar">
+                    <div class="progress-fill ${gc}" style="width: ${grade.score}%"></div>
+                </div>
+                <div class="metric-grade-label">${grade.label} (${grade.score}/100)</div>
+            </div>`;
+    }
+    html += '</div>';
+
+    html += `
+        <div class="chart-row">
+            <div class="chart-card chart-full">
+                <h3>Performance Radar</h3>
+                <canvas id="chart-radar" style="max-height: 350px;"></canvas>
+            </div>
+        </div>`;
+
+    if (Object.keys(data.by_channel).length >= 2) {
+        html += `
+        <div class="table-card">
+            <h3>Channel Scorecard Comparison</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        ${Object.keys(data.by_channel).map(ch => `<th class="text-right">${channelLabel(ch)}</th>`).join('')}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>CPA</td>${Object.values(data.by_channel).map(ch => `<td class="text-right">${fmtCurrency(ch.blended_cpa)}</td>`).join('')}</tr>
+                    <tr><td>CTR</td>${Object.values(data.by_channel).map(ch => `<td class="text-right">${ch.blended_ctr != null ? (ch.blended_ctr * 100).toFixed(2) + '%' : 'N/A'}</td>`).join('')}</tr>
+                    <tr><td>Conv. Rate</td>${Object.values(data.by_channel).map(ch => `<td class="text-right">${ch.blended_conversion_rate != null ? (ch.blended_conversion_rate * 100).toFixed(2) + '%' : 'N/A'}</td>`).join('')}</tr>
+                    <tr><td>Avg CPC</td>${Object.values(data.by_channel).map(ch => `<td class="text-right">${fmtCurrency(ch.avg_cpc)}</td>`).join('')}</tr>
+                    <tr><td>CPM</td>${Object.values(data.by_channel).map(ch => `<td class="text-right">${fmtCurrency(ch.cpm)}</td>`).join('')}</tr>
+                </tbody>
+            </table>
+        </div>`;
+    }
+
+    container.innerHTML = html;
+
+    const radarLabels = [];
+    const radarData = [];
+    for (const [key, grade] of Object.entries(sc.grades)) {
+        if (grade.score > 0) {
+            radarLabels.push(metricLabels[key] || key);
+            radarData.push(grade.score);
+        }
+    }
+
+    if (radarLabels.length >= 3) {
+        chartInstances.push(new Chart(document.getElementById('chart-radar'), {
+            type: 'radar',
+            data: {
+                labels: radarLabels,
+                datasets: [
+                    {
+                        label: 'Your Score',
+                        data: radarData,
+                        backgroundColor: 'rgba(37, 99, 235, 0.15)',
+                        borderColor: '#2563eb',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#2563eb',
+                    },
+                    {
+                        label: 'Target (80)',
+                        data: radarLabels.map(() => 80),
+                        backgroundColor: 'transparent',
+                        borderColor: 'rgba(5, 150, 105, 0.4)',
+                        borderWidth: 1,
+                        borderDash: [5, 5],
+                        pointRadius: 0,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } },
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: { stepSize: 20 },
+                        grid: { color: 'rgba(0,0,0,0.06)' },
+                    }
+                }
+            }
+        }));
+    }
+}
+
+// ===== Recommendations =====
+function renderRecommendations(data) {
+    const container = document.getElementById('tab-recommendations');
+    const recs = data.recommendations;
+
+    if (!recs || recs.length === 0) {
+        container.innerHTML = `
+            <div class="exec-summary">
+                <h3>No Recommendations</h3>
+                <p>Everything looks good! No specific issues detected based on the uploaded data.</p>
+            </div>`;
+        return;
+    }
+
+    const grouped = { high: [], medium: [], low: [] };
+    recs.forEach(r => {
+        if (grouped[r.priority]) grouped[r.priority].push(r);
+    });
+
+    const priorityLabels = { high: 'High Priority', medium: 'Medium Priority', low: 'Low Priority' };
+
+    let html = '';
+
+    if (grouped.high.length > 0) {
+        html += `
+        <div class="exec-summary" style="border-left: 4px solid #dc2626; margin-bottom: 24px;">
+            <h3>Quick Wins</h3>
+            <p>${grouped.high.slice(0, 3).map(r => r.title).join(' &bull; ')}</p>
+        </div>`;
+    }
+
+    for (const [priority, items] of Object.entries(grouped)) {
+        if (items.length === 0) continue;
+
+        html += `
+        <div class="recs-section">
+            <div class="recs-section-title priority-${priority}">${priorityLabels[priority]} (${items.length})</div>`;
+
+        for (const rec of items) {
+            html += `
+            <div class="rec-card priority-${rec.priority}">
+                <div class="rec-header">
+                    <span class="rec-title">${rec.title}</span>
+                    <span class="rec-category">${rec.category}</span>
+                </div>
+                <div class="rec-detail">${rec.detail}</div>`;
+
+            if (rec.affected_campaigns && rec.affected_campaigns.length > 0) {
+                html += '<div class="rec-campaigns">';
+                rec.affected_campaigns.forEach(c => {
+                    html += `<span class="rec-campaign-tag">${c.length > 35 ? c.slice(0, 33) + '...' : c}</span>`;
+                });
+                html += '</div>';
+            }
+
+            if (rec.potential_impact) {
+                html += `<div class="rec-impact">Potential impact: ${rec.potential_impact}</div>`;
+            }
+
+            html += '</div>';
+        }
+
+        html += '</div>';
+    }
+
+    container.innerHTML = html;
+}
+    </script>
 </body>
 </html>

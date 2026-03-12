@@ -48,6 +48,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const googleDrop = document.getElementById('google-drop');
     const linkedinDrop = document.getElementById('linkedin-drop');
 
+    // Advanced settings toggle
+    const advToggle = document.getElementById('advanced-toggle');
+    const advContent = document.getElementById('advanced-content');
+    if (advToggle && advContent) {
+        advToggle.addEventListener('click', () => {
+            advToggle.classList.toggle('open');
+            advContent.classList.toggle('open');
+        });
+    }
+
     // File input change handlers
     googleInput.addEventListener('change', () => updateFileLabel(googleInput, 'google-file-name', 'google-drop'));
     linkedinInput.addEventListener('change', () => updateFileLabel(linkedinInput, 'linkedin-file-name', 'linkedin-drop'));
