@@ -1,3 +1,6 @@
+import os
+from pathlib import Path
+
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -10,10 +13,12 @@ from backend.metrics import calculate_all_metrics
 from backend.scorecard import generate_scorecard
 from backend.recommendations import generate_recommendations
 
+BASE_DIR = Path(__file__).resolve().parent
+
 app = FastAPI(title="Paid Marketing Dashboard")
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
+templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 
 @app.get("/")
@@ -33,6 +38,17 @@ async def analyze(
     avg_customer_ltv: float = Form(0),
     monthly_revenue: float = Form(0),
 ):
+    import traceback
+    try:
+        return await _analyze(google_ads_csv, linkedin_ads_csv, avg_customer_ltv, monthly_revenue)
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Internal error: {str(e)}", "trace": traceback.format_exc()},
+        )
+
+
+async def _analyze(google_ads_csv, linkedin_ads_csv, avg_customer_ltv, monthly_revenue):
     if not google_ads_csv and not linkedin_ads_csv:
         return JSONResponse(
             status_code=400,
