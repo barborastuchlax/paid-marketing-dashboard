@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketing Performance Analyzer</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <div class="logo">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                    <polyline points="7.5 4.21 12 6.81 16.5 4.21"/>
+                    <line x1="12" y1="22.08" x2="12" y2="11.73"/>
+                </svg>
+                <h1>Marketing Performance Analyzer</h1>
+            </div>
+            <span class="header-subtitle">Google Ads + LinkedIn Ads</span>
+        </div>
+    </header>
+
+    <main>
+        <!-- Upload Section -->
+        <section id="upload-section" class="upload-section">
+            <div class="upload-card">
+                <h2>Upload Your Ad Data</h2>
+                <p class="upload-desc">Export CSVs from Google Ads and/or LinkedIn Ads Campaign Manager, then upload below.</p>
+
+                <form id="upload-form">
+                    <div class="file-inputs">
+                        <div class="file-input-group">
+                            <label for="google-csv">
+                                <div class="file-drop-zone" id="google-drop">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    <span class="file-label">Google Ads CSV</span>
+                                    <span class="file-name" id="google-file-name">No file chosen</span>
+                                </div>
+                                <input type="file" id="google-csv" accept=".csv" hidden>
+                            </label>
+                        </div>
+                        <div class="file-input-group">
+                            <label for="linkedin-csv">
+                                <div class="file-drop-zone" id="linkedin-drop">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    <span class="file-label">LinkedIn Ads CSV</span>
+                                    <span class="file-name" id="linkedin-file-name">No file chosen</span>
+                                </div>
+                                <input type="file" id="linkedin-csv" accept=".csv" hidden>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="extra-inputs">
+                        <div class="input-group">
+                            <label for="ltv-input">Avg. Customer LTV ($)</label>
+                            <input type="number" id="ltv-input" placeholder="e.g. 500" min="0" step="1">
+                        </div>
+                        <div class="input-group">
+                            <label for="revenue-input">Monthly Revenue ($)</label>
+                            <input type="number" id="revenue-input" placeholder="e.g. 50000" min="0" step="1">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="analyze-btn">
+                        <span id="btn-text">Analyze Performance</span>
+                        <span id="btn-loading" class="hidden">Analyzing...</span>
+                    </button>
+                    <p id="upload-error" class="error-text hidden"></p>
+                </form>
+            </div>
+        </section>
+
+        <!-- Results Section (hidden until analysis) -->
+        <section id="results-section" class="hidden">
+            <div class="tab-bar">
+                <button class="tab active" data-tab="dashboard">Dashboard</button>
+                <button class="tab" data-tab="report">Report</button>
+                <button class="tab" data-tab="scorecard">Scorecard</button>
+                <button class="tab" data-tab="recommendations">Recommendations</button>
+                <button class="btn-secondary btn-new-analysis" id="new-analysis-btn">New Analysis</button>
+            </div>
+
+            <div id="tab-dashboard" class="tab-content active"></div>
+            <div id="tab-report" class="tab-content"></div>
+            <div id="tab-scorecard" class="tab-content"></div>
+            <div id="tab-recommendations" class="tab-content"></div>
+        </section>
+    </main>
+
+    <script src="/static/js/app.js"></script>
+    <script src="/static/js/dashboard.js"></script>
+    <script src="/static/js/report.js"></script>
+    <script src="/static/js/scorecard.js"></script>
+    <script src="/static/js/recommendations.js"></script>
+</body>
+</html>
