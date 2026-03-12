@@ -8,7 +8,7 @@ from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 from typing import Optional
 
-from backend.parsers import google_ads, linkedin_ads
+from backend.parsers import google_ads, linkedin_ads, linkedin_demographics
 from backend.metrics import calculate_all_metrics
 from backend.scorecard import generate_scorecard
 from backend.recommendations import generate_recommendations
@@ -35,12 +35,13 @@ async def health():
 async def analyze(
     google_ads_csv: Optional[UploadFile] = File(None),
     linkedin_ads_csv: Optional[UploadFile] = File(None),
+    linkedin_demographics_csv: Optional[UploadFile] = File(None),
     avg_customer_ltv: float = Form(0),
     monthly_revenue: float = Form(0),
 ):
     import traceback
     try:
-        return await _analyze(google_ads_csv, linkedin_ads_csv, avg_customer_ltv, monthly_revenue)
+        return await _analyze(google_ads_csv, linkedin_ads_csv, linkedin_demographics_csv, avg_customer_ltv, monthly_revenue)
     except Exception as e:
         return JSONResponse(
             status_code=500,
@@ -48,7 +49,7 @@ async def analyze(
         )
 
 
-async def _analyze(google_ads_csv, linkedin_ads_csv, avg_customer_ltv, monthly_revenue):
+async def _analyze(google_ads_csv, linkedin_ads_csv, linkedin_demographics_csv, avg_customer_ltv, monthly_revenue):
     if not google_ads_csv and not linkedin_ads_csv:
         return JSONResponse(
             status_code=400,
@@ -72,6 +73,14 @@ async def _analyze(google_ads_csv, linkedin_ads_csv, avg_customer_ltv, monthly_r
         except Exception as e:
             errors.append(f"LinkedIn Ads CSV error: {str(e)}")
 
+    demographics = None
+    if linkedin_demographics_csv and linkedin_demographics_csv.filename:
+        try:
+            content = await linkedin_demographics_csv.read()
+            demographics = linkedin_demographics.parse(content)
+        except Exception as e:
+            errors.append(f"LinkedIn Demographics CSV error: {str(e)}")
+
     if not campaigns:
         return JSONResponse(
             status_code=400,
@@ -91,6 +100,7 @@ async def _analyze(google_ads_csv, linkedin_ads_csv, avg_customer_ltv, monthly_r
         "cac": metrics['cac'],
         "ltv_cac_ratio": metrics['ltv_cac_ratio'],
         "mer": metrics['mer'],
+        "demographics": demographics.model_dump() if demographics else None,
         "warnings": errors if errors else None,
     }
 

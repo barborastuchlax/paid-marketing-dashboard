@@ -62,3 +62,20 @@ class AnalysisResult(BaseModel):
     cac: Optional[float] = None
     ltv_cac_ratio: Optional[float] = None
     mer: Optional[float] = None
+
+
+class DemographicEntry(BaseModel):
+    value: str
+    impressions: int = 0
+    clicks: int = 0
+    spend: float = 0.0
+    conversions: float = 0.0
+    ctr: float = 0.0
+
+
+class DemographicsData(BaseModel):
+    age: list[DemographicEntry] = []
+    job_function: list[DemographicEntry] = []
+    seniority: list[DemographicEntry] = []
+    industry: list[DemographicEntry] = []
+    company_size: list[DemographicEntry] = []

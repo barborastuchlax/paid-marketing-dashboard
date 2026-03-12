@@ -66,7 +66,6 @@ main {
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
     padding: 40px;
-    max-width: 680px;
     width: 100%;
 }
 .upload-card h2 {
@@ -84,6 +83,18 @@ main {
     grid-template-columns: 1fr 1fr;
     gap: 16px;
     margin-bottom: 20px;
+}
+.file-inputs-3 {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+.file-drop-zone-small {
+    padding: 20px 12px;
+}
+.file-drop-zone-small .file-label {
+    font-size: 0.82rem;
+}
+.upload-card {
+    max-width: 800px;
 }
 .file-drop-zone {
     border: 2px dashed #d1d5db;
@@ -519,6 +530,143 @@ tbody tr:hover { background: #f0f4ff; }
 .channel-tag.google { background: #fef3c7; color: #92400e; }
 .channel-tag.linkedin { background: #dbeafe; color: #1e40af; }
 
+/* ===== Funnel ===== */
+.funnel-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 24px;
+}
+.funnel-card h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #374151;
+}
+.funnel-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+}
+.funnel-step {
+    text-align: center;
+    flex: 1;
+    position: relative;
+}
+.funnel-bar {
+    height: 60px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin: 0 4px 8px;
+    transition: transform 0.2s;
+}
+.funnel-bar:hover { transform: scaleY(1.05); }
+.funnel-step-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+.funnel-step-sub {
+    font-size: 0.72rem;
+    color: #9ca3af;
+    margin-top: 2px;
+}
+.funnel-arrow {
+    color: #d1d5db;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    margin: 0 -4px;
+    margin-bottom: 28px;
+}
+
+/* ===== Insight Cards ===== */
+.insight-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.insight-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    border-left: 4px solid #2563eb;
+}
+.insight-card h4 {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin-bottom: 8px;
+}
+.insight-card p {
+    font-size: 0.87rem;
+    color: #4b5563;
+    line-height: 1.5;
+}
+.insight-card .insight-metric {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1a1f36;
+    margin-bottom: 4px;
+}
+
+/* ===== Enhanced KPI ===== */
+.kpi-tile {
+    transition: transform 0.15s, box-shadow 0.15s;
+    border-top: 3px solid transparent;
+}
+.kpi-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.kpi-tile.kpi-good { border-top-color: #059669; }
+.kpi-tile.kpi-warn { border-top-color: #d97706; }
+.kpi-tile.kpi-bad { border-top-color: #dc2626; }
+.kpi-tile.kpi-neutral { border-top-color: #2563eb; }
+
+/* ===== Demographics ===== */
+.demo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.demo-empty {
+    background: #fff;
+    border-radius: 8px;
+    padding: 40px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    text-align: center;
+}
+.demo-empty svg {
+    margin-bottom: 16px;
+    color: #d1d5db;
+}
+.demo-empty h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+}
+.demo-empty p {
+    font-size: 0.87rem;
+    color: #6b7280;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
 /* ===== Print ===== */
 @media print {
     header, .tab-bar, .btn-print, .btn-new-analysis, #upload-section { display: none !important; }
@@ -532,9 +680,11 @@ tbody tr:hover { background: #f0f4ff; }
     }
 }
 @media (max-width: 768px) {
-    .file-inputs, .extra-inputs, .chart-row { grid-template-columns: 1fr; }
+    .file-inputs, .file-inputs-3, .extra-inputs, .chart-row, .demo-grid, .insight-row { grid-template-columns: 1fr; }
     .kpi-row { grid-template-columns: repeat(2, 1fr); }
     .upload-card { padding: 24px; }
+    .funnel-steps { flex-direction: column; }
+    .funnel-arrow { transform: rotate(90deg); }
 }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
@@ -562,10 +712,10 @@ tbody tr:hover { background: #f0f4ff; }
                 <p class="upload-desc">Export CSVs from Google Ads and/or LinkedIn Ads Campaign Manager, then upload below.</p>
 
                 <form id="upload-form">
-                    <div class="file-inputs">
+                    <div class="file-inputs file-inputs-3">
                         <div class="file-input-group">
                             <label for="google-csv">
-                                <div class="file-drop-zone" id="google-drop">
+                                <div class="file-drop-zone file-drop-zone-small" id="google-drop">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                                     <span class="file-label">Google Ads CSV</span>
                                     <span class="file-name" id="google-file-name">No file chosen</span>
@@ -575,12 +725,22 @@ tbody tr:hover { background: #f0f4ff; }
                         </div>
                         <div class="file-input-group">
                             <label for="linkedin-csv">
-                                <div class="file-drop-zone" id="linkedin-drop">
+                                <div class="file-drop-zone file-drop-zone-small" id="linkedin-drop">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                                     <span class="file-label">LinkedIn Ads CSV</span>
                                     <span class="file-name" id="linkedin-file-name">No file chosen</span>
                                 </div>
                                 <input type="file" id="linkedin-csv" accept=".csv" hidden>
+                            </label>
+                        </div>
+                        <div class="file-input-group">
+                            <label for="demographics-csv">
+                                <div class="file-drop-zone file-drop-zone-small" id="demographics-drop">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                    <span class="file-label">Demographics CSV</span>
+                                    <span class="file-name" id="demographics-file-name">Optional</span>
+                                </div>
+                                <input type="file" id="demographics-csv" accept=".csv" hidden>
                             </label>
                         </div>
                     </div>
@@ -621,6 +781,7 @@ tbody tr:hover { background: #f0f4ff; }
                 <button class="tab active" data-tab="dashboard">Dashboard</button>
                 <button class="tab" data-tab="report">Report</button>
                 <button class="tab" data-tab="scorecard">Scorecard</button>
+                <button class="tab" data-tab="demographics">Demographics</button>
                 <button class="tab" data-tab="recommendations">Recommendations</button>
                 <button class="btn-secondary btn-new-analysis" id="new-analysis-btn">New Analysis</button>
             </div>
@@ -628,6 +789,7 @@ tbody tr:hover { background: #f0f4ff; }
             <div id="tab-dashboard" class="tab-content active"></div>
             <div id="tab-report" class="tab-content"></div>
             <div id="tab-scorecard" class="tab-content"></div>
+            <div id="tab-demographics" class="tab-content"></div>
             <div id="tab-recommendations" class="tab-content"></div>
         </section>
     </main>
@@ -680,6 +842,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('upload-form');
     const googleInput = document.getElementById('google-csv');
     const linkedinInput = document.getElementById('linkedin-csv');
+    const demographicsInput = document.getElementById('demographics-csv');
 
     // Advanced settings toggle
     const advToggle = document.getElementById('advanced-toggle');
@@ -694,9 +857,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // File input change handlers
     googleInput.addEventListener('change', () => updateFileLabel(googleInput, 'google-file-name', 'google-drop'));
     linkedinInput.addEventListener('change', () => updateFileLabel(linkedinInput, 'linkedin-file-name', 'linkedin-drop'));
+    demographicsInput.addEventListener('change', () => updateFileLabel(demographicsInput, 'demographics-file-name', 'demographics-drop'));
 
     // Drag and drop
-    [['google-drop', googleInput], ['linkedin-drop', linkedinInput]].forEach(([id, input]) => {
+    [['google-drop', googleInput], ['linkedin-drop', linkedinInput], ['demographics-drop', demographicsInput]].forEach(([id, input]) => {
         const zone = document.getElementById(id);
         zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
         zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
@@ -705,7 +869,8 @@ document.addEventListener('DOMContentLoaded', () => {
             zone.classList.remove('dragover');
             if (e.dataTransfer.files.length) {
                 input.files = e.dataTransfer.files;
-                updateFileLabel(input, id === 'google-drop' ? 'google-file-name' : 'linkedin-file-name', id);
+                const nameMap = {'google-drop': 'google-file-name', 'linkedin-drop': 'linkedin-file-name', 'demographics-drop': 'demographics-file-name'};
+                updateFileLabel(input, nameMap[id], id);
             }
         });
     });
@@ -730,9 +895,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('btn-text').classList.add('hidden');
         document.getElementById('btn-loading').classList.remove('hidden');
 
+        const demographicsFile = demographicsInput.files[0];
+
         const formData = new FormData();
         if (googleFile) formData.append('google_ads_csv', googleFile);
         if (linkedinFile) formData.append('linkedin_ads_csv', linkedinFile);
+        if (demographicsFile) formData.append('linkedin_demographics_csv', demographicsFile);
         formData.append('avg_customer_ltv', document.getElementById('ltv-input').value || '0');
         formData.append('monthly_revenue', document.getElementById('revenue-input').value || '0');
 
@@ -802,6 +970,7 @@ function showResults() {
     renderDashboard(analysisData);
     renderReport(analysisData);
     renderScorecard(analysisData);
+    renderDemographics(analysisData);
     renderRecommendations(analysisData);
 }
 
@@ -816,52 +985,146 @@ const COLORS = {
     palette: ['#2563eb', '#f59e0b', '#059669', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#6366f1'],
 };
 
+function kpiClass(good) {
+    if (good === true) return 'kpi-good';
+    if (good === false) return 'kpi-bad';
+    return 'kpi-neutral';
+}
+
 function renderDashboard(data) {
     const container = document.getElementById('tab-dashboard');
     const s = data.summary;
+    const campaigns = data.by_campaign;
+    const numChannels = Object.keys(data.by_channel).length;
+    const ctrGood = s.blended_ctr != null ? s.blended_ctr >= 0.02 : null;
+    const cpaGood = s.blended_cpa != null && s.total_conversions > 0 ? true : null;
 
-    let kpis = `
-        <div class="kpi-row">
-            <div class="kpi-tile">
-                <div class="kpi-label">Total Spend</div>
-                <div class="kpi-value">${fmtCurrency(s.total_spend)}</div>
-                <div class="kpi-sub">${fmt(Object.keys(data.by_channel).length)} channel${Object.keys(data.by_channel).length > 1 ? 's' : ''}</div>
-            </div>
-            <div class="kpi-tile">
-                <div class="kpi-label">Total Conversions</div>
-                <div class="kpi-value">${fmt(s.total_conversions)}</div>
-                <div class="kpi-sub">${fmt(s.total_clicks)} clicks</div>
-            </div>
-            <div class="kpi-tile">
-                <div class="kpi-label">Blended CPA</div>
-                <div class="kpi-value">${fmtCurrency(s.blended_cpa)}</div>
-                <div class="kpi-sub">Cost per acquisition</div>
-            </div>
-            <div class="kpi-tile">
-                <div class="kpi-label">Blended CTR</div>
-                <div class="kpi-value">${s.blended_ctr != null ? (s.blended_ctr * 100).toFixed(2) + '%' : 'N/A'}</div>
-                <div class="kpi-sub">${fmt(s.total_impressions)} impressions</div>
-            </div>
-            <div class="kpi-tile">
-                <div class="kpi-label">ROAS</div>
-                <div class="kpi-value">${s.blended_roas != null ? s.blended_roas.toFixed(2) + 'x' : 'N/A'}</div>
-                <div class="kpi-sub">${s.blended_roas != null ? fmtCurrency(s.conversion_value) + ' revenue' : 'No value data'}</div>
-            </div>`;
+    // ===== KPI Row =====
+    let kpis = `<div class="kpi-row">
+        <div class="kpi-tile kpi-neutral">
+            <div class="kpi-label">Total Spend</div>
+            <div class="kpi-value">${fmtCurrency(s.total_spend)}</div>
+            <div class="kpi-sub">${fmt(numChannels)} channel${numChannels > 1 ? 's' : ''} &middot; ${fmt(campaigns.length)} campaign${campaigns.length > 1 ? 's' : ''}</div>
+        </div>
+        <div class="kpi-tile kpi-neutral">
+            <div class="kpi-label">Impressions</div>
+            <div class="kpi-value">${fmt(s.total_impressions)}</div>
+            <div class="kpi-sub">CPM: ${fmtCurrency(s.cpm)}</div>
+        </div>
+        <div class="kpi-tile ${kpiClass(ctrGood)}">
+            <div class="kpi-label">CTR</div>
+            <div class="kpi-value">${s.blended_ctr != null ? (s.blended_ctr * 100).toFixed(2) + '%' : 'N/A'}</div>
+            <div class="kpi-sub">${fmt(s.total_clicks)} clicks from ${fmt(s.total_impressions)} impr.</div>
+        </div>
+        <div class="kpi-tile kpi-neutral">
+            <div class="kpi-label">Avg CPC</div>
+            <div class="kpi-value">${fmtCurrency(s.avg_cpc)}</div>
+            <div class="kpi-sub">Cost per click</div>
+        </div>
+        <div class="kpi-tile ${kpiClass(s.total_conversions > 0 ? true : false)}">
+            <div class="kpi-label">Conversions</div>
+            <div class="kpi-value">${fmt(s.total_conversions)}</div>
+            <div class="kpi-sub">${s.blended_conversion_rate != null ? (s.blended_conversion_rate * 100).toFixed(2) + '% conv. rate' : 'No conversion data'}</div>
+        </div>
+        <div class="kpi-tile ${kpiClass(cpaGood)}">
+            <div class="kpi-label">CPA</div>
+            <div class="kpi-value">${s.total_conversions > 0 ? fmtCurrency(s.blended_cpa) : 'N/A'}</div>
+            <div class="kpi-sub">Cost per acquisition</div>
+        </div>`;
+
+    if (s.blended_roas != null) {
+        kpis += `<div class="kpi-tile ${kpiClass(s.blended_roas >= 1)}">
+            <div class="kpi-label">ROAS</div>
+            <div class="kpi-value">${s.blended_roas.toFixed(2)}x</div>
+            <div class="kpi-sub">${fmtCurrency(s.conversion_value)} revenue</div>
+        </div>`;
+    }
 
     if (data.ltv_cac_ratio != null) {
-        kpis += `
-            <div class="kpi-tile">
-                <div class="kpi-label">LTV:CAC Ratio</div>
-                <div class="kpi-value">${data.ltv_cac_ratio.toFixed(1)}:1</div>
-                <div class="kpi-sub">${data.ltv_cac_ratio >= 3 ? 'Healthy' : 'Below target (3:1)'}</div>
-            </div>`;
+        kpis += `<div class="kpi-tile ${kpiClass(data.ltv_cac_ratio >= 3)}">
+            <div class="kpi-label">LTV:CAC</div>
+            <div class="kpi-value">${data.ltv_cac_ratio.toFixed(1)}:1</div>
+            <div class="kpi-sub">${data.ltv_cac_ratio >= 3 ? 'Healthy ratio' : 'Below 3:1 target'}</div>
+        </div>`;
     }
 
     kpis += '</div>';
 
-    let charts = '<div class="chart-row">';
-    if (Object.keys(data.by_channel).length >= 2) {
-        charts += `
+    // ===== Funnel Visualization =====
+    const clickRate = s.total_impressions > 0 ? ((s.total_clicks / s.total_impressions) * 100).toFixed(2) + '%' : '0%';
+    const convRate = s.total_clicks > 0 ? ((s.total_conversions / s.total_clicks) * 100).toFixed(2) + '%' : '0%';
+
+    let funnel = `<div class="funnel-card">
+        <h3>Conversion Funnel</h3>
+        <div class="funnel-steps">
+            <div class="funnel-step">
+                <div class="funnel-bar" style="background: #3b82f6;">${fmt(s.total_impressions)}</div>
+                <div class="funnel-step-label">Impressions</div>
+            </div>
+            <div class="funnel-arrow">&rarr;</div>
+            <div class="funnel-step">
+                <div class="funnel-bar" style="background: #8b5cf6;">${fmt(s.total_clicks)}</div>
+                <div class="funnel-step-label">Clicks</div>
+                <div class="funnel-step-sub">${clickRate} CTR</div>
+            </div>
+            <div class="funnel-arrow">&rarr;</div>
+            <div class="funnel-step">
+                <div class="funnel-bar" style="background: #059669;">${fmt(s.total_conversions)}</div>
+                <div class="funnel-step-label">Conversions</div>
+                <div class="funnel-step-sub">${convRate} conv. rate</div>
+            </div>
+        </div>
+    </div>`;
+
+    // ===== Insights =====
+    let insights = '';
+    if (campaigns.length === 1) {
+        const c = campaigns[0];
+        insights += `<div class="insight-row">
+            <div class="insight-card" style="border-left-color: #3b82f6;">
+                <h4>Campaign Snapshot</h4>
+                <p><strong>${c.campaign_name}</strong> on ${channelLabel(c.channel)}</p>
+                <p style="margin-top:8px">Spent ${fmtCurrency(c.spend)} reaching ${fmt(c.impressions)} people, generating ${fmt(c.clicks)} clicks at ${fmtCurrency(c.avg_cpc)} per click.</p>
+            </div>
+            <div class="insight-card" style="border-left-color: ${c.conversions > 0 ? '#059669' : '#d97706'};">
+                <h4>Performance Assessment</h4>
+                ${c.conversions > 0
+                    ? `<div class="insight-metric">${fmt(c.conversions)} conversions</div><p>At ${fmtCurrency(c.cpa)} per conversion with a ${(c.conversion_rate * 100).toFixed(2)}% conversion rate.</p>`
+                    : `<div class="insight-metric">Awareness Stage</div><p>This campaign is driving impressions and clicks but hasn't generated tracked conversions yet. Consider reviewing your conversion tracking setup or optimizing landing pages.</p>`
+                }
+            </div>
+        </div>`;
+    } else if (campaigns.length > 1) {
+        const bestCtr = [...campaigns].sort((a, b) => b.ctr - a.ctr)[0];
+        const convCampaigns = campaigns.filter(c => c.conversions > 0);
+        const bestCpa = convCampaigns.length > 0 ? [...convCampaigns].sort((a, b) => a.cpa - b.cpa)[0] : null;
+
+        insights += `<div class="insight-row">
+            <div class="insight-card" style="border-left-color: #3b82f6;">
+                <h4>Best CTR</h4>
+                <div class="insight-metric">${(bestCtr.ctr * 100).toFixed(2)}%</div>
+                <p>${bestCtr.campaign_name} on ${channelLabel(bestCtr.channel)}</p>
+            </div>`;
+        if (bestCpa) {
+            insights += `<div class="insight-card" style="border-left-color: #059669;">
+                <h4>Most Efficient CPA</h4>
+                <div class="insight-metric">${fmtCurrency(bestCpa.cpa)}</div>
+                <p>${bestCpa.campaign_name} on ${channelLabel(bestCpa.channel)}</p>
+            </div>`;
+        } else {
+            insights += `<div class="insight-card" style="border-left-color: #d97706;">
+                <h4>No Conversions Yet</h4>
+                <p>None of your campaigns have tracked conversions. Check your conversion tracking setup.</p>
+            </div>`;
+        }
+        insights += '</div>';
+    }
+
+    // ===== Charts =====
+    let charts = '';
+
+    if (numChannels >= 2) {
+        charts += `<div class="chart-row">
             <div class="chart-card">
                 <h3>Spend & Conversions by Channel</h3>
                 <canvas id="chart-channel-compare"></canvas>
@@ -869,32 +1132,46 @@ function renderDashboard(data) {
             <div class="chart-card">
                 <h3>Spend Distribution</h3>
                 <canvas id="chart-spend-dist"></canvas>
-            </div>`;
-    }
-    charts += '</div><div class="chart-row">';
-    charts += `
-        <div class="chart-card">
-            <h3>CPA by Campaign</h3>
-            <canvas id="chart-cpa-campaign"></canvas>
-        </div>
-        <div class="chart-card">
-            <h3>CTR by Campaign</h3>
-            <canvas id="chart-ctr-campaign"></canvas>
+            </div>
         </div>`;
-    charts += '</div>';
-    charts += `
-        <div class="chart-row">
-            <div class="chart-card chart-full">
+    }
+
+    if (campaigns.length > 1) {
+        charts += `<div class="chart-row">
+            <div class="chart-card">
+                <h3>CPA by Campaign</h3>
+                <canvas id="chart-cpa-campaign"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>CTR by Campaign</h3>
+                <canvas id="chart-ctr-campaign"></canvas>
+            </div>
+        </div>`;
+
+        charts += `<div class="chart-row">
+            <div class="chart-card">
+                <h3>Spend by Campaign</h3>
+                <canvas id="chart-spend-campaign"></canvas>
+            </div>
+            <div class="chart-card chart-full" style="grid-column: auto;">
                 <h3>Conversion Rate by Campaign</h3>
                 <canvas id="chart-conv-rate"></canvas>
             </div>
         </div>`;
+    } else {
+        // Single campaign -- show a metric comparison chart
+        charts += `<div class="chart-row">
+            <div class="chart-card chart-full">
+                <h3>Performance Metrics</h3>
+                <canvas id="chart-single-metrics"></canvas>
+            </div>
+        </div>`;
+    }
 
-    container.innerHTML = kpis + charts;
+    container.innerHTML = kpis + funnel + insights + charts;
 
-    const campaigns = data.by_campaign;
-
-    if (Object.keys(data.by_channel).length >= 2) {
+    // ===== Render Charts =====
+    if (numChannels >= 2) {
         const channelNames = Object.keys(data.by_channel).map(channelLabel);
         const channelSpends = Object.values(data.by_channel).map(c => c.total_spend);
         const channelConvs = Object.values(data.by_channel).map(c => c.total_conversions);
@@ -904,7 +1181,7 @@ function renderDashboard(data) {
             data: {
                 labels: channelNames,
                 datasets: [
-                    { label: 'Spend', data: channelSpends, backgroundColor: '#ef4444', borderRadius: 4 },
+                    { label: 'Spend ($)', data: channelSpends, backgroundColor: '#ef4444', borderRadius: 4 },
                     { label: 'Conversions', data: channelConvs, backgroundColor: '#059669', borderRadius: 4 },
                 ]
             },
@@ -930,56 +1207,86 @@ function renderDashboard(data) {
         }));
     }
 
-    const campaignsWithConv = campaigns.filter(c => c.conversions > 0);
-    const cpaSorted = [...campaignsWithConv].sort((a, b) => b.cpa - a.cpa);
-    const cpaColors = cpaSorted.map(c => c.channel === 'google_ads' ? COLORS.google : COLORS.linkedin);
+    if (campaigns.length > 1) {
+        // CPA chart
+        const campaignsWithConv = campaigns.filter(c => c.conversions > 0);
+        const cpaSorted = [...campaignsWithConv].sort((a, b) => b.cpa - a.cpa);
+        const cpaColors = cpaSorted.map(c => c.channel === 'google_ads' ? COLORS.google : COLORS.linkedin);
 
-    chartInstances.push(new Chart(document.getElementById('chart-cpa-campaign'), {
-        type: 'bar',
-        data: {
-            labels: cpaSorted.map(c => c.campaign_name.length > 30 ? c.campaign_name.slice(0, 28) + '...' : c.campaign_name),
-            datasets: [{ label: 'CPA ($)', data: cpaSorted.map(c => c.cpa), backgroundColor: cpaColors, borderRadius: 4 }]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            plugins: { legend: { display: false } },
-            scales: { x: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } } },
-        }
-    }));
+        chartInstances.push(new Chart(document.getElementById('chart-cpa-campaign'), {
+            type: 'bar',
+            data: {
+                labels: cpaSorted.map(c => c.campaign_name.length > 30 ? c.campaign_name.slice(0, 28) + '...' : c.campaign_name),
+                datasets: [{ label: 'CPA ($)', data: cpaSorted.map(c => c.cpa), backgroundColor: cpaColors, borderRadius: 4 }]
+            },
+            options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } } } }
+        }));
 
-    const ctrSorted = [...campaigns].sort((a, b) => b.ctr - a.ctr);
-    const ctrColors = ctrSorted.map(c => c.channel === 'google_ads' ? COLORS.google : COLORS.linkedin);
+        // CTR chart
+        const ctrSorted = [...campaigns].sort((a, b) => b.ctr - a.ctr);
+        const ctrColors = ctrSorted.map(c => c.channel === 'google_ads' ? COLORS.google : COLORS.linkedin);
 
-    chartInstances.push(new Chart(document.getElementById('chart-ctr-campaign'), {
-        type: 'bar',
-        data: {
-            labels: ctrSorted.map(c => c.campaign_name.length > 30 ? c.campaign_name.slice(0, 28) + '...' : c.campaign_name),
-            datasets: [{ label: 'CTR (%)', data: ctrSorted.map(c => (c.ctr * 100).toFixed(2)), backgroundColor: ctrColors, borderRadius: 4 }]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            plugins: { legend: { display: false } },
-            scales: { x: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } } },
-        }
-    }));
+        chartInstances.push(new Chart(document.getElementById('chart-ctr-campaign'), {
+            type: 'bar',
+            data: {
+                labels: ctrSorted.map(c => c.campaign_name.length > 30 ? c.campaign_name.slice(0, 28) + '...' : c.campaign_name),
+                datasets: [{ label: 'CTR (%)', data: ctrSorted.map(c => (c.ctr * 100).toFixed(2)), backgroundColor: ctrColors, borderRadius: 4 }]
+            },
+            options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } } } }
+        }));
 
-    const crSorted = [...campaignsWithConv].sort((a, b) => b.conversion_rate - a.conversion_rate);
-    const crColors = crSorted.map((_, i) => COLORS.palette[i % COLORS.palette.length]);
+        // Spend by campaign doughnut
+        const spendColors = campaigns.map((_, i) => COLORS.palette[i % COLORS.palette.length]);
+        chartInstances.push(new Chart(document.getElementById('chart-spend-campaign'), {
+            type: 'doughnut',
+            data: {
+                labels: campaigns.map(c => c.campaign_name.length > 25 ? c.campaign_name.slice(0, 23) + '...' : c.campaign_name),
+                datasets: [{ data: campaigns.map(c => c.spend), backgroundColor: spendColors, borderWidth: 0 }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } }, cutout: '55%' }
+        }));
 
-    chartInstances.push(new Chart(document.getElementById('chart-conv-rate'), {
-        type: 'bar',
-        data: {
-            labels: crSorted.map(c => c.campaign_name.length > 35 ? c.campaign_name.slice(0, 33) + '...' : c.campaign_name),
-            datasets: [{ label: 'Conv. Rate (%)', data: crSorted.map(c => (c.conversion_rate * 100).toFixed(2)), backgroundColor: crColors, borderRadius: 4 }]
-        },
-        options: {
-            responsive: true,
-            plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } } },
-        }
-    }));
+        // Conv rate chart
+        const crSorted = [...campaignsWithConv].sort((a, b) => b.conversion_rate - a.conversion_rate);
+        const crColors = crSorted.map((_, i) => COLORS.palette[i % COLORS.palette.length]);
+
+        chartInstances.push(new Chart(document.getElementById('chart-conv-rate'), {
+            type: 'bar',
+            data: {
+                labels: crSorted.map(c => c.campaign_name.length > 30 ? c.campaign_name.slice(0, 28) + '...' : c.campaign_name),
+                datasets: [{ label: 'Conv. Rate (%)', data: crSorted.map(c => (c.conversion_rate * 100).toFixed(2)), backgroundColor: crColors, borderRadius: 4 }]
+            },
+            options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } } } }
+        }));
+    } else if (campaigns.length === 1) {
+        // Single campaign metrics radar
+        const c = campaigns[0];
+        const benchmarks = { ctr: 2, cpc: 3, cpm: 10, convRate: 2 };
+        const actual = {
+            ctr: c.ctr * 100,
+            cpc: c.avg_cpc,
+            cpm: c.impressions > 0 ? (c.spend / c.impressions) * 1000 : 0,
+            convRate: c.conversion_rate * 100
+        };
+
+        chartInstances.push(new Chart(document.getElementById('chart-single-metrics'), {
+            type: 'bar',
+            data: {
+                labels: ['CTR (%)', 'Avg CPC ($)', 'CPM ($)', 'Conv. Rate (%)'],
+                datasets: [{
+                    label: 'Your Campaign',
+                    data: [actual.ctr, actual.cpc, actual.cpm, actual.convRate],
+                    backgroundColor: ['#3b82f6', '#8b5cf6', '#f59e0b', '#059669'],
+                    borderRadius: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } } },
+            }
+        }));
+    }
 }
 
 // ===== Report =====
@@ -1256,6 +1563,124 @@ function renderScorecard(data) {
                         grid: { color: 'rgba(0,0,0,0.06)' },
                     }
                 }
+            }
+        }));
+    }
+}
+
+// ===== Demographics =====
+function renderDemographics(data) {
+    const container = document.getElementById('tab-demographics');
+    const demo = data.demographics;
+
+    if (!demo) {
+        container.innerHTML = `
+            <div class="demo-empty">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <h3>No Demographics Data</h3>
+                <p>Upload a LinkedIn Demographics CSV to see audience breakdowns by age, seniority, job function, industry, and company size.</p>
+            </div>`;
+        return;
+    }
+
+    const dimensionNames = {
+        age: 'Age Range',
+        job_function: 'Job Function',
+        seniority: 'Seniority Level',
+        industry: 'Industry',
+        company_size: 'Company Size'
+    };
+
+    const dimensionColors = {
+        age: ['#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe', '#dbeafe', '#2563eb', '#1d4ed8'],
+        job_function: ['#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe', '#ede9fe', '#7c3aed', '#6d28d9'],
+        seniority: ['#059669', '#34d399', '#6ee7b7', '#a7f3d0', '#d1fae5', '#047857', '#065f46'],
+        industry: ['#f59e0b', '#fbbf24', '#fcd34d', '#fde68a', '#fef3c7', '#d97706', '#b45309'],
+        company_size: ['#ec4899', '#f472b6', '#f9a8d4', '#fbcfe8', '#fce7f3', '#db2777', '#be185d']
+    };
+
+    let html = '';
+    let chartCount = 0;
+
+    const dims = Object.entries(demo).filter(([_, entries]) => entries && entries.length > 0);
+
+    if (dims.length === 0) {
+        container.innerHTML = `
+            <div class="demo-empty">
+                <h3>No Dimension Data Found</h3>
+                <p>The demographics CSV was uploaded but no recognized dimensions (age, seniority, job function, etc.) were found. Please check the CSV format.</p>
+            </div>`;
+        return;
+    }
+
+    html += '<div class="demo-grid">';
+    for (const [key, entries] of dims) {
+        const name = dimensionNames[key] || key;
+        const colors = dimensionColors[key] || COLORS.palette;
+        const top10 = entries.slice(0, 10);
+        const chartId = 'demo-chart-' + chartCount++;
+
+        html += `<div class="chart-card">
+            <h3>${name}</h3>
+            <canvas id="${chartId}"></canvas>
+        </div>`;
+    }
+    html += '</div>';
+
+    // Summary table
+    html += `<div class="table-card">
+        <h3>Demographics Summary</h3>
+        <table>
+            <thead>
+                <tr><th>Dimension</th><th>Top Segment</th><th class="text-right">Impressions</th><th class="text-right">Clicks</th><th class="text-right">CTR</th><th class="text-right">Spend</th></tr>
+            </thead>
+            <tbody>`;
+
+    for (const [key, entries] of dims) {
+        if (entries.length === 0) continue;
+        const top = entries[0];
+        html += `<tr>
+            <td>${dimensionNames[key] || key}</td>
+            <td><strong>${top.value}</strong></td>
+            <td class="text-right">${fmt(top.impressions)}</td>
+            <td class="text-right">${fmt(top.clicks)}</td>
+            <td class="text-right">${(top.ctr * 100).toFixed(2)}%</td>
+            <td class="text-right">${fmtCurrency(top.spend)}</td>
+        </tr>`;
+    }
+
+    html += '</tbody></table></div>';
+
+    container.innerHTML = html;
+
+    // Render charts
+    chartCount = 0;
+    for (const [key, entries] of dims) {
+        const colors = dimensionColors[key] || COLORS.palette;
+        const top10 = entries.slice(0, 10);
+        const chartId = 'demo-chart-' + chartCount++;
+
+        chartInstances.push(new Chart(document.getElementById(chartId), {
+            type: 'bar',
+            data: {
+                labels: top10.map(e => e.value.length > 25 ? e.value.slice(0, 23) + '...' : e.value),
+                datasets: [{
+                    label: 'Impressions',
+                    data: top10.map(e => e.impressions),
+                    backgroundColor: colors.slice(0, top10.length),
+                    borderRadius: 4,
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { x: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } } },
             }
         }));
     }
