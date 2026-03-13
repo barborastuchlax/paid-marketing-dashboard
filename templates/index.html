@@ -897,10 +897,28 @@ tbody tr:hover { background: #f0f4ff; }
                                 <input type="number" id="revenue-input" placeholder="e.g. 50000" min="0" step="1">
                             </div>
                         </div>
-                        <div class="copy-input-section" style="margin-top: 20px;">
-                            <label for="ad-copy-input" style="display: block; font-size: 0.82rem; font-weight: 500; color: #374151; margin-bottom: 4px;">Ad Copy (optional)</label>
-                            <span class="input-hint" style="display: block; font-size: 0.72rem; color: #9ca3af; margin-bottom: 8px;">Enter your ad copy to unlock the Copy Analysis tab. Format: one ad per line as <strong>Campaign Name | Headline | Description</strong>. If your CSVs include headline/description columns, this is auto-detected.</span>
-                            <textarea id="ad-copy-input" rows="5" placeholder="Brand Awareness - US | Transform Your Marketing Today | AI-powered analytics that help you spend smarter and convert more.&#10;Retargeting - Demo | Still Thinking About It? | Come back and see what you're missing. Limited offer inside.&#10;Lead Gen - Webinar | Free Webinar: Scale Your Ads | Learn proven strategies to 3x your ROAS in 30 days." style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.85rem; font-family: inherit; resize: vertical; transition: border-color 0.2s;"></textarea>
+                        <div class="copy-input-section" style="margin-top: 24px; border-top: 1px solid #e5e7eb; padding-top: 20px;">
+                            <label style="display: block; font-size: 0.88rem; font-weight: 600; color: #374151; margin-bottom: 4px;">Ad Copy for Copy Analysis (optional)</label>
+                            <span class="input-hint" style="display: block; font-size: 0.78rem; color: #9ca3af; margin-bottom: 12px;">Provide your ad creative copy to unlock AI-powered copy analysis. Choose one or both options below.</span>
+
+                            <div style="margin-bottom: 16px;">
+                                <label for="creatives-csv" style="display: block; font-size: 0.82rem; font-weight: 500; color: #374151; margin-bottom: 6px;">Option 1: Upload a Creatives CSV</label>
+                                <span class="input-hint" style="display: block; font-size: 0.72rem; color: #9ca3af; margin-bottom: 8px;">Export at the <strong>ad level</strong> from Google Ads or LinkedIn. Must include columns: Campaign Name (or Campaign), Headline, and Description.</span>
+                                <label for="creatives-csv" style="cursor: pointer;">
+                                    <div class="file-drop-zone" id="creatives-drop" style="padding: 16px;">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                        <span class="file-label">Creatives CSV</span>
+                                        <span class="file-name" id="creatives-file-name">No file chosen</span>
+                                    </div>
+                                    <input type="file" id="creatives-csv" accept=".csv" hidden>
+                                </label>
+                            </div>
+
+                            <div>
+                                <label for="ad-copy-input" style="display: block; font-size: 0.82rem; font-weight: 500; color: #374151; margin-bottom: 6px;">Option 2: Paste your ad copy (any format)</label>
+                                <span class="input-hint" style="display: block; font-size: 0.72rem; color: #9ca3af; margin-bottom: 8px;">Just paste your ad copy however you have it &mdash; from a doc, spreadsheet, or notes. AI will parse and match it to your campaigns automatically.</span>
+                                <textarea id="ad-copy-input" rows="5" placeholder="Just paste your ad copy here in any format. For example:&#10;&#10;Brand Search campaign:&#10;Headline: Get Started With Acme Today&#10;Description: The #1 rated platform for growing businesses.&#10;&#10;Retargeting ads:&#10;Still Thinking About It? - Come back and see what you're missing.&#10;&#10;Or even just a list of headlines and descriptions..." style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.85rem; font-family: inherit; resize: vertical; transition: border-color 0.2s;"></textarea>
+                            </div>
                         </div>
                     </div>
 
@@ -983,6 +1001,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const googleInput = document.getElementById('google-csv');
     const linkedinInput = document.getElementById('linkedin-csv');
     const demographicsInput = document.getElementById('demographics-csv');
+    const creativesInput = document.getElementById('creatives-csv');
 
     // Advanced settings toggle
     const advToggle = document.getElementById('advanced-toggle');
@@ -998,9 +1017,10 @@ document.addEventListener('DOMContentLoaded', () => {
     googleInput.addEventListener('change', () => updateFileLabel(googleInput, 'google-file-name', 'google-drop'));
     linkedinInput.addEventListener('change', () => updateFileLabel(linkedinInput, 'linkedin-file-name', 'linkedin-drop'));
     demographicsInput.addEventListener('change', () => updateFileLabel(demographicsInput, 'demographics-file-name', 'demographics-drop'));
+    creativesInput.addEventListener('change', () => updateFileLabel(creativesInput, 'creatives-file-name', 'creatives-drop'));
 
     // Drag and drop
-    [['google-drop', googleInput], ['linkedin-drop', linkedinInput], ['demographics-drop', demographicsInput]].forEach(([id, input]) => {
+    [['google-drop', googleInput], ['linkedin-drop', linkedinInput], ['demographics-drop', demographicsInput], ['creatives-drop', creativesInput]].forEach(([id, input]) => {
         const zone = document.getElementById(id);
         zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
         zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
@@ -1009,7 +1029,7 @@ document.addEventListener('DOMContentLoaded', () => {
             zone.classList.remove('dragover');
             if (e.dataTransfer.files.length) {
                 input.files = e.dataTransfer.files;
-                const nameMap = {'google-drop': 'google-file-name', 'linkedin-drop': 'linkedin-file-name', 'demographics-drop': 'demographics-file-name'};
+                const nameMap = {'google-drop': 'google-file-name', 'linkedin-drop': 'linkedin-file-name', 'demographics-drop': 'demographics-file-name', 'creatives-drop': 'creatives-file-name'};
                 updateFileLabel(input, nameMap[id], id);
             }
         });
@@ -1036,11 +1056,13 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('btn-loading').classList.remove('hidden');
 
         const demographicsFile = demographicsInput.files[0];
+        const creativesFile = creativesInput.files[0];
 
         const formData = new FormData();
         if (googleFile) formData.append('google_ads_csv', googleFile);
         if (linkedinFile) formData.append('linkedin_ads_csv', linkedinFile);
         if (demographicsFile) formData.append('linkedin_demographics_csv', demographicsFile);
+        if (creativesFile) formData.append('creatives_csv', creativesFile);
         formData.append('avg_customer_ltv', document.getElementById('ltv-input').value || '0');
         formData.append('monthly_revenue', document.getElementById('revenue-input').value || '0');
         formData.append('ad_copy_text', document.getElementById('ad-copy-input').value || '');

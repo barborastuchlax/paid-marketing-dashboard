@@ -1,5 +1,7 @@
 import json
 import os
+import io
+import pandas as pd
 from backend.models import (
     NormalizedCampaign, CopyAttribute, CopyPattern,
     CopyInsight, CopyAnalysisResult,
@@ -68,92 +70,269 @@ Respond with ONLY valid JSON in this exact format:
     ]
 }}"""
 
+FREEFORM_PARSE_PROMPT = """You are a data extraction assistant. The user has pasted ad copy text in a free-form format. Extract structured ad copy data from it.
 
-def _parse_manual_copy(manual_copy_text: str) -> dict[str, dict]:
-    """Parse manually entered ad copy. Format: campaign_name | headline | description (one per line)."""
+Here are the campaign names from their ad platform data:
+{campaign_names}
+
+Here is the text they pasted:
+---
+{raw_text}
+---
+
+Extract each ad's copy and try to match it to the campaign names above. If an ad doesn't clearly match a campaign, use whatever name/label was provided in the text.
+
+Respond with ONLY valid JSON in this exact format:
+{{
+    "ads": [
+        {{
+            "campaign_name": "matched or provided campaign name",
+            "headline": "the ad headline",
+            "description": "the ad description/body copy"
+        }}
+    ]
+}}"""
+
+
+# ── Creatives CSV parser ──────────────────────────────────────────────────
+
+CREATIVES_COLUMN_MAP = {
+    'campaign': 'campaign_name',
+    'campaign name': 'campaign_name',
+    'campaign_name': 'campaign_name',
+    'headline': 'headline',
+    'headline 1': 'headline',
+    'headlines': 'headline',
+    'ad name': 'headline',
+    'creative name': 'headline',
+    'description': 'description',
+    'description 1': 'description',
+    'description line 1': 'description',
+    'ad copy': 'description',
+    'intro text': 'description',
+    'introductory text': 'description',
+    'body': 'description',
+    'text': 'description',
+    'primary text': 'description',
+}
+
+
+def _parse_creatives_csv(file_content: bytes) -> dict[str, dict]:
+    """Parse a dedicated creatives CSV file. Returns {campaign_name: {headline, description}}."""
     result = {}
-    if not manual_copy_text or not manual_copy_text.strip():
-        return result
-
-    for line in manual_copy_text.strip().split('\n'):
-        line = line.strip()
-        if not line or line.startswith('#'):
+    for encoding in ('utf-8-sig', 'utf-16', 'latin-1'):
+        try:
+            text = file_content.decode(encoding)
+            break
+        except (UnicodeDecodeError, UnicodeError):
             continue
-        parts = [p.strip() for p in line.split('|')]
-        if len(parts) >= 2:
-            campaign = parts[0]
-            headline = parts[1] if len(parts) >= 2 else ''
-            description = parts[2] if len(parts) >= 3 else ''
-            result[campaign] = {'headline': headline, 'description': description}
+    else:
+        text = file_content.decode('utf-8', errors='replace')
+
+    df = pd.read_csv(io.StringIO(text))
+    df.columns = df.columns.str.strip()
+
+    col_mapping = {}
+    for col in df.columns:
+        key = col.lower().strip()
+        if key in CREATIVES_COLUMN_MAP:
+            col_mapping[col] = CREATIVES_COLUMN_MAP[key]
+
+    df = df.rename(columns=col_mapping)
+
+    if 'campaign_name' not in df.columns:
+        raise ValueError("Creatives CSV must include a 'Campaign' or 'Campaign Name' column.")
+
+    for _, row in df.iterrows():
+        cname = str(row.get('campaign_name', '')).strip()
+        if not cname or cname.lower() in ('nan', ''):
+            continue
+
+        headline = str(row.get('headline', '')).strip() if 'headline' in df.columns else ''
+        description = str(row.get('description', '')).strip() if 'description' in df.columns else ''
+
+        if headline.lower() == 'nan':
+            headline = ''
+        if description.lower() == 'nan':
+            description = ''
+
+        if headline or description:
+            if cname not in result or (not result[cname].get('headline') and headline):
+                result[cname] = {'headline': headline, 'description': description}
 
     return result
 
 
+# ── Free-form text parser (AI-powered) ────────────────────────────────────
+
+def _parse_freeform_with_ai(raw_text: str, campaign_names: list[str]) -> dict[str, dict]:
+    """Use Claude to parse free-form ad copy text and match to campaigns."""
+    if not raw_text or not raw_text.strip():
+        return {}
+
+    if not ANTHROPIC_API_KEY:
+        return {}
+
+    try:
+        import anthropic
+        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+
+        prompt = FREEFORM_PARSE_PROMPT.format(
+            campaign_names=json.dumps(campaign_names),
+            raw_text=raw_text,
+        )
+
+        message = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=2048,
+            messages=[{"role": "user", "content": prompt}],
+        )
+
+        response_text = message.content[0].text
+        if '```json' in response_text:
+            response_text = response_text.split('```json')[1].split('```')[0]
+        elif '```' in response_text:
+            response_text = response_text.split('```')[1].split('```')[0]
+
+        data = json.loads(response_text.strip())
+        result = {}
+        for ad in data.get('ads', []):
+            cname = ad.get('campaign_name', '')
+            if cname:
+                result[cname] = {
+                    'headline': ad.get('headline', ''),
+                    'description': ad.get('description', ''),
+                }
+        return result
+    except Exception:
+        return {}
+
+
+# ── Merge copy sources with campaign performance data ─────────────────────
+
 def _merge_copy_with_campaigns(
     campaigns: list[NormalizedCampaign],
-    manual_copy: dict[str, dict],
+    copy_sources: list[dict[str, dict]],
 ) -> list[dict]:
-    """Build ad data list with copy + performance metrics for each campaign that has copy."""
-    ads = []
+    """Build ad data list with copy + performance metrics.
+
+    copy_sources is a list of dicts (in priority order) mapping campaign names to {headline, description}.
+    Later sources override earlier ones.
+    """
+    # Build merged copy lookup: CSV fields first, then each source in order
+    merged = {}
     for c in campaigns:
-        headline = c.headline
-        description = c.description
+        if c.headline or c.description:
+            merged[c.campaign_name] = {'headline': c.headline, 'description': c.description}
 
-        # Manual copy overrides CSV copy
-        if c.campaign_name in manual_copy:
-            mc = manual_copy[c.campaign_name]
-            headline = mc.get('headline', '') or headline
-            description = mc.get('description', '') or description
+    for source in copy_sources:
+        for name, copy in source.items():
+            # Exact match
+            if name in merged:
+                if copy.get('headline'):
+                    merged[name]['headline'] = copy['headline']
+                if copy.get('description'):
+                    merged[name]['description'] = copy['description']
+            else:
+                # Try fuzzy match against campaign names
+                matched = False
+                for c in campaigns:
+                    if name.lower() in c.campaign_name.lower() or c.campaign_name.lower() in name.lower():
+                        if c.campaign_name not in merged:
+                            merged[c.campaign_name] = {'headline': '', 'description': ''}
+                        if copy.get('headline'):
+                            merged[c.campaign_name]['headline'] = copy['headline']
+                        if copy.get('description'):
+                            merged[c.campaign_name]['description'] = copy['description']
+                        matched = True
+                        break
+                if not matched and (copy.get('headline') or copy.get('description')):
+                    merged[name] = copy
 
-        # Also try partial match on campaign name for manual copy
-        if not headline and not description:
-            for key, mc in manual_copy.items():
-                if key.lower() in c.campaign_name.lower() or c.campaign_name.lower() in key.lower():
-                    headline = mc.get('headline', '') or headline
-                    description = mc.get('description', '') or description
-                    break
+    # Build output list with performance data
+    ads = []
+    campaign_lookup = {c.campaign_name: c for c in campaigns}
 
-        if not headline and not description:
+    for name, copy in merged.items():
+        if not copy.get('headline') and not copy.get('description'):
             continue
 
+        c = campaign_lookup.get(name)
         roas = None
-        if c.spend > 0 and c.conversion_value > 0:
+        if c and c.spend > 0 and c.conversion_value > 0:
             roas = round(c.conversion_value / c.spend, 2)
 
         ads.append({
-            'campaign_name': c.campaign_name,
-            'channel': c.channel,
-            'headline': headline,
-            'description': description,
-            'ctr_pct': round(c.ctr * 100, 2),
-            'conversion_rate_pct': round(c.conversion_rate * 100, 2),
-            'cpa': round(c.cost_per_conversion, 2) if c.cost_per_conversion > 0 else None,
+            'campaign_name': name,
+            'channel': c.channel if c else '',
+            'headline': copy.get('headline', ''),
+            'description': copy.get('description', ''),
+            'ctr_pct': round(c.ctr * 100, 2) if c else None,
+            'conversion_rate_pct': round(c.conversion_rate * 100, 2) if c else None,
+            'cpa': round(c.cost_per_conversion, 2) if c and c.cost_per_conversion > 0 else None,
             'roas': roas,
-            'spend': round(c.spend, 2),
-            'conversions': round(c.conversions, 2),
+            'spend': round(c.spend, 2) if c else None,
+            'conversions': round(c.conversions, 2) if c else None,
         })
 
     return ads
 
 
+# ── Main entry point ──────────────────────────────────────────────────────
+
 async def analyze_copy(
     campaigns: list[NormalizedCampaign],
     manual_copy_text: str = "",
+    creatives_csv_content: bytes = None,
 ) -> CopyAnalysisResult:
     """Analyze ad copy using Claude API and correlate with performance metrics."""
-    manual_copy = _parse_manual_copy(manual_copy_text)
-    ads = _merge_copy_with_campaigns(campaigns, manual_copy)
+    copy_sources = []
+
+    # Source 1: Creatives CSV
+    if creatives_csv_content:
+        try:
+            creatives_data = _parse_creatives_csv(creatives_csv_content)
+            if creatives_data:
+                copy_sources.append(creatives_data)
+        except Exception:
+            pass
+
+    # Source 2: Free-form text (AI-parsed if not pipe-delimited)
+    if manual_copy_text and manual_copy_text.strip():
+        # Check if it looks like pipe-delimited format (backward compat)
+        lines = [l.strip() for l in manual_copy_text.strip().split('\n') if l.strip() and not l.strip().startswith('#')]
+        is_pipe_format = all('|' in l for l in lines) if lines else False
+
+        if is_pipe_format:
+            parsed = {}
+            for line in lines:
+                parts = [p.strip() for p in line.split('|')]
+                if len(parts) >= 2:
+                    parsed[parts[0]] = {
+                        'headline': parts[1] if len(parts) >= 2 else '',
+                        'description': parts[2] if len(parts) >= 3 else '',
+                    }
+            if parsed:
+                copy_sources.append(parsed)
+        else:
+            # Use AI to parse free-form text
+            campaign_names = [c.campaign_name for c in campaigns]
+            ai_parsed = _parse_freeform_with_ai(manual_copy_text, campaign_names)
+            if ai_parsed:
+                copy_sources.append(ai_parsed)
+
+    ads = _merge_copy_with_campaigns(campaigns, copy_sources)
 
     if not ads:
         return CopyAnalysisResult(
             ads_analyzed=0,
             insights=[CopyInsight(
-                insight="No ad copy found. To use Copy Analysis, either upload CSVs that include headline/description columns, or enter your ad copy manually in the text area.",
+                insight="No ad copy found. To use Copy Analysis, upload a Creatives CSV, include headline/description columns in your ad platform exports, or paste your ad copy in the text area.",
                 priority="high",
             )],
         )
 
-    # Call Claude API
+    # Call Claude API for analysis
     try:
         import anthropic
         client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
@@ -167,7 +346,6 @@ async def analyze_copy(
         )
 
         response_text = message.content[0].text
-        # Extract JSON from response (handle markdown code blocks)
         if '```json' in response_text:
             response_text = response_text.split('```json')[1].split('```')[0]
         elif '```' in response_text:
@@ -244,7 +422,11 @@ async def analyze_copy(
         ))
 
     # Identify top performing copy (sorted by CTR)
-    top_copy = sorted(ads, key=lambda a: a.get('ctr_pct', 0), reverse=True)[:5]
+    top_copy = sorted(
+        [a for a in ads if a.get('ctr_pct') is not None],
+        key=lambda a: a.get('ctr_pct', 0),
+        reverse=True,
+    )[:5]
 
     return CopyAnalysisResult(
         ads_analyzed=len(ads),

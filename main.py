@@ -37,13 +37,14 @@ async def analyze(
     google_ads_csv: Optional[UploadFile] = File(None),
     linkedin_ads_csv: Optional[UploadFile] = File(None),
     linkedin_demographics_csv: Optional[UploadFile] = File(None),
+    creatives_csv: Optional[UploadFile] = File(None),
     avg_customer_ltv: float = Form(0),
     monthly_revenue: float = Form(0),
     ad_copy_text: str = Form(""),
 ):
     import traceback
     try:
-        return await _analyze(google_ads_csv, linkedin_ads_csv, linkedin_demographics_csv, avg_customer_ltv, monthly_revenue, ad_copy_text)
+        return await _analyze(google_ads_csv, linkedin_ads_csv, linkedin_demographics_csv, creatives_csv, avg_customer_ltv, monthly_revenue, ad_copy_text)
     except Exception as e:
         return JSONResponse(
             status_code=500,
@@ -51,7 +52,7 @@ async def analyze(
         )
 
 
-async def _analyze(google_ads_csv, linkedin_ads_csv, linkedin_demographics_csv, avg_customer_ltv, monthly_revenue, ad_copy_text=""):
+async def _analyze(google_ads_csv, linkedin_ads_csv, linkedin_demographics_csv, creatives_csv, avg_customer_ltv, monthly_revenue, ad_copy_text=""):
     if not google_ads_csv and not linkedin_ads_csv:
         return JSONResponse(
             status_code=400,
@@ -93,8 +94,16 @@ async def _analyze(google_ads_csv, linkedin_ads_csv, linkedin_demographics_csv, 
     scorecard = generate_scorecard(metrics, avg_customer_ltv)
     recommendations = generate_recommendations(metrics, avg_customer_ltv)
 
-    # Copy analysis (runs if ad copy is available from CSVs or manual entry)
-    copy_result = await analyze_copy(campaigns, ad_copy_text)
+    # Parse creatives CSV if provided
+    creatives_csv_content = None
+    if creatives_csv and creatives_csv.filename:
+        try:
+            creatives_csv_content = await creatives_csv.read()
+        except Exception as e:
+            errors.append(f"Creatives CSV error: {str(e)}")
+
+    # Copy analysis (runs if ad copy is available from CSVs, creatives CSV, or manual entry)
+    copy_result = await analyze_copy(campaigns, ad_copy_text, creatives_csv_content)
 
     result = {
         "summary": metrics['summary'].model_dump(),
