@@ -813,7 +813,8 @@ tbody tr:hover { background: #f0f4ff; }
     }
 }
 @media (max-width: 768px) {
-    .file-inputs, .file-inputs-3, .extra-inputs, .chart-row, .demo-grid, .insight-row { grid-template-columns: 1fr; }
+    .file-inputs, .file-inputs-3, .extra-inputs, .chart-row, .demo-grid, .insight-row, .copy-input-section > div[style*="grid-template-columns"] { grid-template-columns: 1fr; }
+    .copy-input-section div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
     .kpi-row { grid-template-columns: repeat(2, 1fr); }
     .upload-card { padding: 24px; }
     .funnel-steps { flex-direction: column; }
@@ -878,6 +879,32 @@ tbody tr:hover { background: #f0f4ff; }
                         </div>
                     </div>
 
+                    <div class="copy-input-section" style="margin-top: 24px; border-top: 1px solid #e5e7eb; padding-top: 20px;">
+                        <label style="display: block; font-size: 0.95rem; font-weight: 600; color: #1a1f36; margin-bottom: 4px;">Ad Creatives (optional)</label>
+                        <span class="input-hint" style="display: block; font-size: 0.8rem; color: #9ca3af; margin-bottom: 16px;">Add your ad copy to unlock AI-powered copy analysis. Upload a CSV or paste your copy below.</span>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                            <div>
+                                <label for="creatives-csv" style="display: block; font-size: 0.82rem; font-weight: 500; color: #374151; margin-bottom: 6px;">Upload Creatives CSV</label>
+                                <span class="input-hint" style="display: block; font-size: 0.72rem; color: #9ca3af; margin-bottom: 8px;">Export at the <strong>ad level</strong> from Google/LinkedIn. Needs: Campaign Name, Headline, Description columns.</span>
+                                <label for="creatives-csv" style="cursor: pointer;">
+                                    <div class="file-drop-zone" id="creatives-drop" style="padding: 16px;">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                        <span class="file-label">Creatives CSV</span>
+                                        <span class="file-name" id="creatives-file-name">No file chosen</span>
+                                    </div>
+                                    <input type="file" id="creatives-csv" accept=".csv" hidden>
+                                </label>
+                            </div>
+
+                            <div>
+                                <label for="ad-copy-input" style="display: block; font-size: 0.82rem; font-weight: 500; color: #374151; margin-bottom: 6px;">Or paste your ad copy (any format)</label>
+                                <span class="input-hint" style="display: block; font-size: 0.72rem; color: #9ca3af; margin-bottom: 8px;">Paste from a doc, spreadsheet, or notes. AI will parse and match to your campaigns.</span>
+                                <textarea id="ad-copy-input" rows="4" placeholder="Just paste your ad copy here in any format, e.g:&#10;&#10;Brand Search: Get Started With Acme Today - The #1 rated platform for growing businesses.&#10;Retargeting: Still Thinking About It? - Come back and see what you're missing." style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.85rem; font-family: inherit; resize: vertical; transition: border-color 0.2s; height: 100%; min-height: 90px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
                     <button type="button" class="advanced-toggle" id="advanced-toggle">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                         Advanced settings (optional)
@@ -895,29 +922,6 @@ tbody tr:hover { background: #f0f4ff; }
                                 <label for="revenue-input">Monthly Revenue ($)</label>
                                 <span class="input-hint">Your total monthly revenue from all sources</span>
                                 <input type="number" id="revenue-input" placeholder="e.g. 50000" min="0" step="1">
-                            </div>
-                        </div>
-                        <div class="copy-input-section" style="margin-top: 24px; border-top: 1px solid #e5e7eb; padding-top: 20px;">
-                            <label style="display: block; font-size: 0.88rem; font-weight: 600; color: #374151; margin-bottom: 4px;">Ad Copy for Copy Analysis (optional)</label>
-                            <span class="input-hint" style="display: block; font-size: 0.78rem; color: #9ca3af; margin-bottom: 12px;">Provide your ad creative copy to unlock AI-powered copy analysis. Choose one or both options below.</span>
-
-                            <div style="margin-bottom: 16px;">
-                                <label for="creatives-csv" style="display: block; font-size: 0.82rem; font-weight: 500; color: #374151; margin-bottom: 6px;">Option 1: Upload a Creatives CSV</label>
-                                <span class="input-hint" style="display: block; font-size: 0.72rem; color: #9ca3af; margin-bottom: 8px;">Export at the <strong>ad level</strong> from Google Ads or LinkedIn. Must include columns: Campaign Name (or Campaign), Headline, and Description.</span>
-                                <label for="creatives-csv" style="cursor: pointer;">
-                                    <div class="file-drop-zone" id="creatives-drop" style="padding: 16px;">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                                        <span class="file-label">Creatives CSV</span>
-                                        <span class="file-name" id="creatives-file-name">No file chosen</span>
-                                    </div>
-                                    <input type="file" id="creatives-csv" accept=".csv" hidden>
-                                </label>
-                            </div>
-
-                            <div>
-                                <label for="ad-copy-input" style="display: block; font-size: 0.82rem; font-weight: 500; color: #374151; margin-bottom: 6px;">Option 2: Paste your ad copy (any format)</label>
-                                <span class="input-hint" style="display: block; font-size: 0.72rem; color: #9ca3af; margin-bottom: 8px;">Just paste your ad copy however you have it &mdash; from a doc, spreadsheet, or notes. AI will parse and match it to your campaigns automatically.</span>
-                                <textarea id="ad-copy-input" rows="5" placeholder="Just paste your ad copy here in any format. For example:&#10;&#10;Brand Search campaign:&#10;Headline: Get Started With Acme Today&#10;Description: The #1 rated platform for growing businesses.&#10;&#10;Retargeting ads:&#10;Still Thinking About It? - Come back and see what you're missing.&#10;&#10;Or even just a list of headlines and descriptions..." style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.85rem; font-family: inherit; resize: vertical; transition: border-color 0.2s;"></textarea>
                             </div>
                         </div>
                     </div>
