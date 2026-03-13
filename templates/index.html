@@ -495,6 +495,139 @@ tbody tr:hover { background: #f0f4ff; }
 }
 .rec-impact { font-size: 0.8rem; font-weight: 500; color: #059669; margin-top: 6px; }
 
+/* ===== Copy Analysis ===== */
+.copy-summary-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.copy-stat-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    text-align: center;
+}
+.copy-stat-value { font-size: 1.6rem; font-weight: 700; color: #1a1f36; }
+.copy-stat-label { font-size: 0.8rem; color: #6b7280; margin-top: 4px; }
+.copy-insight-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 12px;
+    border-left: 4px solid #2563eb;
+}
+.copy-insight-card.high { border-left-color: #dc2626; }
+.copy-insight-card.medium { border-left-color: #f59e0b; }
+.copy-insight-card.low { border-left-color: #059669; }
+.copy-insight-text { font-size: 0.9rem; color: #1a1f36; font-weight: 500; }
+.copy-insight-data { font-size: 0.78rem; color: #6b7280; margin-top: 4px; }
+.copy-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    margin: 2px 4px 2px 0;
+}
+.copy-tag.hook { background: #ede9fe; color: #5b21b6; }
+.copy-tag.tone { background: #fef3c7; color: #92400e; }
+.copy-tag.cta { background: #dbeafe; color: #1e40af; }
+.copy-tag.emotion { background: #fce7f3; color: #9d174d; }
+.copy-tag.value { background: #d1fae5; color: #065f46; }
+.copy-tag.length { background: #f3f4f6; color: #374151; }
+.copy-tag.top_performer { background: #d1fae5; color: #065f46; }
+.copy-tag.average { background: #fef3c7; color: #92400e; }
+.copy-tag.underperformer { background: #fee2e2; color: #991b1b; }
+.copy-ad-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 12px;
+}
+.copy-ad-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    gap: 12px;
+}
+.copy-ad-name { font-weight: 600; font-size: 0.9rem; color: #1a1f36; }
+.copy-ad-metrics {
+    display: flex;
+    gap: 16px;
+    font-size: 0.78rem;
+    color: #6b7280;
+    flex-shrink: 0;
+}
+.copy-ad-metrics span strong { color: #1a1f36; }
+.copy-ad-text {
+    background: #f9fafb;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+}
+.copy-ad-headline { font-weight: 600; font-size: 0.9rem; color: #1a1f36; margin-bottom: 4px; }
+.copy-ad-desc { font-size: 0.85rem; color: #4b5563; }
+.copy-ad-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.copy-pattern-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.copy-pattern-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.copy-pattern-title { font-size: 0.82rem; font-weight: 600; color: #374151; margin-bottom: 8px; text-transform: capitalize; }
+.copy-pattern-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 0.78rem;
+}
+.copy-pattern-bar-label { width: 100px; color: #374151; text-transform: capitalize; flex-shrink: 0; }
+.copy-pattern-bar-track { flex: 1; height: 8px; background: #f3f4f6; border-radius: 4px; overflow: hidden; }
+.copy-pattern-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+.copy-pattern-bar-value { width: 55px; text-align: right; color: #6b7280; flex-shrink: 0; }
+.copy-rec-list { list-style: none; }
+.copy-rec-list li {
+    background: #fff;
+    border-radius: 8px;
+    padding: 14px 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 8px;
+    font-size: 0.88rem;
+    color: #1a1f36;
+    position: relative;
+    padding-left: 32px;
+}
+.copy-rec-list li::before {
+    content: '';
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #2563eb;
+}
+.copy-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 16px;
+    margin-top: 8px;
+}
+
 /* ===== Report ===== */
 .exec-summary {
     background: #fff;
@@ -764,6 +897,11 @@ tbody tr:hover { background: #f0f4ff; }
                                 <input type="number" id="revenue-input" placeholder="e.g. 50000" min="0" step="1">
                             </div>
                         </div>
+                        <div class="copy-input-section" style="margin-top: 20px;">
+                            <label for="ad-copy-input" style="display: block; font-size: 0.82rem; font-weight: 500; color: #374151; margin-bottom: 4px;">Ad Copy (optional)</label>
+                            <span class="input-hint" style="display: block; font-size: 0.72rem; color: #9ca3af; margin-bottom: 8px;">Enter your ad copy to unlock the Copy Analysis tab. Format: one ad per line as <strong>Campaign Name | Headline | Description</strong>. If your CSVs include headline/description columns, this is auto-detected.</span>
+                            <textarea id="ad-copy-input" rows="5" placeholder="Brand Awareness - US | Transform Your Marketing Today | AI-powered analytics that help you spend smarter and convert more.&#10;Retargeting - Demo | Still Thinking About It? | Come back and see what you're missing. Limited offer inside.&#10;Lead Gen - Webinar | Free Webinar: Scale Your Ads | Learn proven strategies to 3x your ROAS in 30 days." style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.85rem; font-family: inherit; resize: vertical; transition: border-color 0.2s;"></textarea>
+                        </div>
                     </div>
 
                     <button type="submit" class="btn-primary" id="analyze-btn">
@@ -783,6 +921,7 @@ tbody tr:hover { background: #f0f4ff; }
                 <button class="tab" data-tab="scorecard">Scorecard</button>
                 <button class="tab" data-tab="demographics">Demographics</button>
                 <button class="tab" data-tab="recommendations">Recommendations</button>
+                <button class="tab" data-tab="copy-analysis">Copy Analysis</button>
                 <button class="btn-secondary btn-new-analysis" id="new-analysis-btn">New Analysis</button>
             </div>
 
@@ -791,6 +930,7 @@ tbody tr:hover { background: #f0f4ff; }
             <div id="tab-scorecard" class="tab-content"></div>
             <div id="tab-demographics" class="tab-content"></div>
             <div id="tab-recommendations" class="tab-content"></div>
+            <div id="tab-copy-analysis" class="tab-content"></div>
         </section>
     </main>
 
@@ -903,6 +1043,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (demographicsFile) formData.append('linkedin_demographics_csv', demographicsFile);
         formData.append('avg_customer_ltv', document.getElementById('ltv-input').value || '0');
         formData.append('monthly_revenue', document.getElementById('revenue-input').value || '0');
+        formData.append('ad_copy_text', document.getElementById('ad-copy-input').value || '');
 
         try {
             const res = await fetch('/api/analyze', { method: 'POST', body: formData });
@@ -972,6 +1113,7 @@ function showResults() {
     renderScorecard(analysisData);
     renderDemographics(analysisData);
     renderRecommendations(analysisData);
+    renderCopyAnalysis(analysisData);
 }
 
 // ===== Dashboard =====
@@ -1749,6 +1891,177 @@ function renderRecommendations(data) {
         }
 
         html += '</div>';
+    }
+
+    container.innerHTML = html;
+}
+
+// ===== Copy Analysis =====
+function renderCopyAnalysis(data) {
+    const container = document.getElementById('tab-copy-analysis');
+    const ca = data.copy_analysis;
+
+    if (!ca || ca.ads_analyzed === 0) {
+        container.innerHTML = `
+            <div class="exec-summary">
+                <h3>Copy Analysis</h3>
+                <p>No ad copy was found in your CSV exports. To use this feature:</p>
+                <ul style="margin-top: 12px; padding-left: 20px; color: #4b5563; font-size: 0.9rem; line-height: 2;">
+                    <li><strong>Option 1:</strong> Export your ad data with headline and description columns included</li>
+                    <li><strong>Option 2:</strong> Enter your ad copy manually in Advanced Settings before analyzing</li>
+                </ul>
+                <p style="margin-top: 12px; font-size: 0.85rem; color: #6b7280;">Format: <code style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px;">Campaign Name | Headline | Description</code> (one per line)</p>
+            </div>`;
+        return;
+    }
+
+    let html = '';
+
+    // Summary stats
+    const attrs = ca.copy_attributes || [];
+    const hookTypes = [...new Set(attrs.map(a => a.hook_type).filter(Boolean))];
+    const tones = [...new Set(attrs.map(a => a.tone).filter(Boolean))];
+    const topCTR = attrs.length > 0 ? Math.max(...attrs.map(a => a.ctr || 0)) : 0;
+
+    html += `
+        <div class="copy-summary-row">
+            <div class="copy-stat-card">
+                <div class="copy-stat-value">${ca.ads_analyzed}</div>
+                <div class="copy-stat-label">Ads Analyzed</div>
+            </div>
+            <div class="copy-stat-card">
+                <div class="copy-stat-value">${hookTypes.length}</div>
+                <div class="copy-stat-label">Hook Types Found</div>
+            </div>
+            <div class="copy-stat-card">
+                <div class="copy-stat-value">${tones.length}</div>
+                <div class="copy-stat-label">Tone Variations</div>
+            </div>
+            <div class="copy-stat-card">
+                <div class="copy-stat-value">${topCTR.toFixed(2)}%</div>
+                <div class="copy-stat-label">Best CTR</div>
+            </div>
+        </div>`;
+
+    // AI Insights
+    if (ca.insights && ca.insights.length > 0) {
+        html += '<h3 class="copy-section-title">Key Insights</h3>';
+        for (const insight of ca.insights) {
+            html += `
+                <div class="copy-insight-card ${insight.priority}">
+                    <div class="copy-insight-text">${insight.insight}</div>
+                    ${insight.supporting_data ? `<div class="copy-insight-data">${insight.supporting_data}</div>` : ''}
+                </div>`;
+        }
+    }
+
+    // Performance Patterns
+    if (ca.patterns && ca.patterns.length > 0) {
+        html += '<h3 class="copy-section-title" style="margin-top: 24px;">Performance Patterns</h3>';
+
+        // Group patterns by attribute_type
+        const grouped = {};
+        for (const p of ca.patterns) {
+            if (!grouped[p.attribute_type]) grouped[p.attribute_type] = [];
+            grouped[p.attribute_type].push(p);
+        }
+
+        const typeLabels = {
+            hook_type: 'Hook Type', tone: 'Tone', cta_type: 'CTA Type',
+            emotional_trigger: 'Emotional Trigger', value_prop: 'Value Proposition',
+        };
+
+        html += '<div class="copy-pattern-grid">';
+        for (const [type, patterns] of Object.entries(grouped)) {
+            const maxCTR = Math.max(...patterns.map(p => p.avg_ctr || 0), 1);
+            html += `<div class="copy-pattern-card">
+                <div class="copy-pattern-title">${typeLabels[type] || type.replace(/_/g, ' ')} (by CTR)</div>`;
+
+            const sorted = [...patterns].sort((a, b) => (b.avg_ctr || 0) - (a.avg_ctr || 0));
+            for (const p of sorted) {
+                const pct = maxCTR > 0 ? ((p.avg_ctr || 0) / maxCTR) * 100 : 0;
+                const colors = {
+                    top_performer: '#059669', average: '#f59e0b', underperformer: '#ef4444',
+                };
+                const color = colors[p.performance_label] || '#2563eb';
+                html += `
+                    <div class="copy-pattern-bar">
+                        <span class="copy-pattern-bar-label">${p.attribute_value.replace(/_/g, ' ')}</span>
+                        <div class="copy-pattern-bar-track">
+                            <div class="copy-pattern-bar-fill" style="width: ${pct}%; background: ${color};"></div>
+                        </div>
+                        <span class="copy-pattern-bar-value">${p.avg_ctr != null ? p.avg_ctr.toFixed(2) + '%' : '-'}</span>
+                    </div>`;
+            }
+            html += '</div>';
+        }
+        html += '</div>';
+    }
+
+    // Top Performing Copy
+    if (ca.top_performing_copy && ca.top_performing_copy.length > 0) {
+        html += '<h3 class="copy-section-title" style="margin-top: 24px;">Top Performing Copy (by CTR)</h3>';
+        for (const ad of ca.top_performing_copy) {
+            html += `
+                <div class="copy-ad-card">
+                    <div class="copy-ad-header">
+                        <span class="copy-ad-name">${ad.campaign_name}</span>
+                        <div class="copy-ad-metrics">
+                            <span>CTR: <strong>${ad.ctr_pct != null ? ad.ctr_pct.toFixed(2) + '%' : '-'}</strong></span>
+                            <span>Conv: <strong>${ad.conversion_rate_pct != null ? ad.conversion_rate_pct.toFixed(2) + '%' : '-'}</strong></span>
+                            ${ad.cpa ? `<span>CPA: <strong>$${ad.cpa.toFixed(2)}</strong></span>` : ''}
+                        </div>
+                    </div>
+                    <div class="copy-ad-text">
+                        ${ad.headline ? `<div class="copy-ad-headline">${ad.headline}</div>` : ''}
+                        ${ad.description ? `<div class="copy-ad-desc">${ad.description}</div>` : ''}
+                    </div>
+                </div>`;
+        }
+    }
+
+    // All Ads with Classification Tags
+    if (attrs.length > 0) {
+        html += '<h3 class="copy-section-title" style="margin-top: 24px;">All Ads &mdash; Copy Classification</h3>';
+        const sortedAttrs = [...attrs].sort((a, b) => (b.ctr || 0) - (a.ctr || 0));
+        for (const ad of sortedAttrs) {
+            html += `
+                <div class="copy-ad-card">
+                    <div class="copy-ad-header">
+                        <span class="copy-ad-name">${ad.campaign_name}
+                            <span class="channel-tag ${channelTagClass(ad.channel)}" style="margin-left: 8px;">${channelLabel(ad.channel)}</span>
+                        </span>
+                        <div class="copy-ad-metrics">
+                            <span>CTR: <strong>${ad.ctr != null ? ad.ctr.toFixed(2) + '%' : '-'}</strong></span>
+                            <span>Conv: <strong>${ad.conversion_rate != null ? ad.conversion_rate.toFixed(2) + '%' : '-'}</strong></span>
+                            ${ad.cpa ? `<span>CPA: <strong>$${ad.cpa.toFixed(2)}</strong></span>` : ''}
+                            ${ad.roas ? `<span>ROAS: <strong>${ad.roas.toFixed(2)}x</strong></span>` : ''}
+                        </div>
+                    </div>
+                    <div class="copy-ad-text">
+                        ${ad.headline ? `<div class="copy-ad-headline">${ad.headline}</div>` : ''}
+                        ${ad.description ? `<div class="copy-ad-desc">${ad.description}</div>` : ''}
+                    </div>
+                    <div class="copy-ad-tags">
+                        ${ad.hook_type ? `<span class="copy-tag hook">${ad.hook_type.replace(/_/g, ' ')}</span>` : ''}
+                        ${ad.tone ? `<span class="copy-tag tone">${ad.tone}</span>` : ''}
+                        ${ad.cta_type ? `<span class="copy-tag cta">${ad.cta_type.replace(/_/g, ' ')}</span>` : ''}
+                        ${ad.emotional_trigger && ad.emotional_trigger !== 'none' ? `<span class="copy-tag emotion">${ad.emotional_trigger}</span>` : ''}
+                        ${ad.value_prop && ad.value_prop !== 'none' ? `<span class="copy-tag value">${ad.value_prop.replace(/_/g, ' ')}</span>` : ''}
+                        ${ad.length_category ? `<span class="copy-tag length">${ad.length_category}</span>` : ''}
+                    </div>
+                </div>`;
+        }
+    }
+
+    // AI Recommendations
+    if (ca.recommendations && ca.recommendations.length > 0) {
+        html += '<h3 class="copy-section-title" style="margin-top: 24px;">Copy Recommendations</h3>';
+        html += '<ul class="copy-rec-list">';
+        for (const rec of ca.recommendations) {
+            html += `<li>${rec}</li>`;
+        }
+        html += '</ul>';
     }
 
     container.innerHTML = html;

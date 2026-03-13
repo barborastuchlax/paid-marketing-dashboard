@@ -14,6 +14,9 @@ class NormalizedCampaign(BaseModel):
     avg_cpc: float = 0.0
     cost_per_conversion: float = 0.0
     conversion_rate: float = 0.0
+    # Ad copy fields (optional - populated if CSV contains them)
+    headline: str = ""
+    description: str = ""
 
 
 class MetricGrade(BaseModel):
@@ -51,6 +54,51 @@ class ChannelMetrics(BaseModel):
     cpm: Optional[float] = None
     avg_cpc: Optional[float] = None
     conversion_value: float = 0
+
+
+class CopyAttribute(BaseModel):
+    campaign_name: str
+    channel: str = ""
+    headline: str = ""
+    description: str = ""
+    hook_type: str = ""        # question, stat, bold_claim, pain_point, social_proof, benefit, curiosity
+    cta_type: str = ""         # urgency, soft, benefit_driven, direct, none
+    tone: str = ""             # casual, professional, emotional, humorous, authoritative
+    length_category: str = ""  # short, medium, long
+    emotional_trigger: str = ""  # fear, aspiration, curiosity, fomo, trust, empathy
+    value_prop: str = ""       # price, quality, convenience, exclusivity, results, innovation
+    # Performance metrics attached for correlation
+    ctr: Optional[float] = None
+    conversion_rate: Optional[float] = None
+    cpa: Optional[float] = None
+    roas: Optional[float] = None
+    spend: Optional[float] = None
+    conversions: Optional[float] = None
+
+
+class CopyPattern(BaseModel):
+    attribute_type: str    # e.g. "hook_type", "tone"
+    attribute_value: str   # e.g. "pain_point", "professional"
+    avg_ctr: Optional[float] = None
+    avg_conversion_rate: Optional[float] = None
+    avg_cpa: Optional[float] = None
+    sample_count: int = 0
+    performance_label: str = ""  # "top_performer", "average", "underperformer"
+
+
+class CopyInsight(BaseModel):
+    insight: str
+    priority: str = "medium"  # high, medium, low
+    supporting_data: str = ""
+
+
+class CopyAnalysisResult(BaseModel):
+    ads_analyzed: int = 0
+    copy_attributes: list[CopyAttribute] = []
+    patterns: list[CopyPattern] = []
+    insights: list[CopyInsight] = []
+    top_performing_copy: list[dict] = []
+    recommendations: list[str] = []
 
 
 class AnalysisResult(BaseModel):

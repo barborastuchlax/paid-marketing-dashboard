@@ -12,6 +12,7 @@ from backend.parsers import google_ads, linkedin_ads, linkedin_demographics
 from backend.metrics import calculate_all_metrics
 from backend.scorecard import generate_scorecard
 from backend.recommendations import generate_recommendations
+from backend.copy_analysis import analyze_copy
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -38,10 +39,11 @@ async def analyze(
     linkedin_demographics_csv: Optional[UploadFile] = File(None),
     avg_customer_ltv: float = Form(0),
     monthly_revenue: float = Form(0),
+    ad_copy_text: str = Form(""),
 ):
     import traceback
     try:
-        return await _analyze(google_ads_csv, linkedin_ads_csv, linkedin_demographics_csv, avg_customer_ltv, monthly_revenue)
+        return await _analyze(google_ads_csv, linkedin_ads_csv, linkedin_demographics_csv, avg_customer_ltv, monthly_revenue, ad_copy_text)
     except Exception as e:
         return JSONResponse(
             status_code=500,
@@ -49,7 +51,7 @@ async def analyze(
         )
 
 
-async def _analyze(google_ads_csv, linkedin_ads_csv, linkedin_demographics_csv, avg_customer_ltv, monthly_revenue):
+async def _analyze(google_ads_csv, linkedin_ads_csv, linkedin_demographics_csv, avg_customer_ltv, monthly_revenue, ad_copy_text=""):
     if not google_ads_csv and not linkedin_ads_csv:
         return JSONResponse(
             status_code=400,
@@ -91,6 +93,9 @@ async def _analyze(google_ads_csv, linkedin_ads_csv, linkedin_demographics_csv, 
     scorecard = generate_scorecard(metrics, avg_customer_ltv)
     recommendations = generate_recommendations(metrics, avg_customer_ltv)
 
+    # Copy analysis (runs if ad copy is available from CSVs or manual entry)
+    copy_result = await analyze_copy(campaigns, ad_copy_text)
+
     result = {
         "summary": metrics['summary'].model_dump(),
         "by_channel": {k: v.model_dump() for k, v in metrics['by_channel'].items()},
@@ -101,6 +106,7 @@ async def _analyze(google_ads_csv, linkedin_ads_csv, linkedin_demographics_csv, 
         "ltv_cac_ratio": metrics['ltv_cac_ratio'],
         "mer": metrics['mer'],
         "demographics": demographics.model_dump() if demographics else None,
+        "copy_analysis": copy_result.model_dump(),
         "warnings": errors if errors else None,
     }
 

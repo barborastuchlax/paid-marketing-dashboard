@@ -1,6 +1,6 @@
-Campaign,Ad group,Impressions,Clicks,CTR,Avg. CPC,Cost,Conversions,Cost / conv.,Conv. rate,Conv. value
-Brand Search,Brand Keywords,45000,3150,7.00%,"$1.20","$3,780.00",189,"$20.00",6.00%,"$18,900.00"
-Competitor Keywords,Competitor Terms,32000,960,3.00%,"$3.50","$3,360.00",48,"$70.00",5.00%,"$4,800.00"
-Performance Max,Auto Segments,120000,4800,4.00%,"$0.85","$4,080.00",144,"$28.33",3.00%,"$14,400.00"
-Display Remarketing,Past Visitors,280000,2800,1.00%,"$0.45","$1,260.00",56,"$22.50",2.00%,"$5,600.00"
-YouTube Awareness,Video Ads,500000,5000,1.00%,"$0.12","$600.00",6,"$100.00",0.12%,"$600.00"
+Campaign,Ad group,Headline,Description,Impressions,Clicks,CTR,Avg. CPC,Cost,Conversions,Cost / conv.,Conv. rate,Conv. value
+Brand Search,Brand Keywords,Get Started With Acme Today,The #1 rated platform for growing businesses. Start your free trial now.,45000,3150,7.00%,"$1.20","$3,780.00",189,"$20.00",6.00%,"$18,900.00"
+Competitor Keywords,Competitor Terms,Switch From [Competitor] & Save 40%,Tired of overpaying? Acme delivers better results at half the cost. See the comparison.,32000,960,3.00%,"$3.50","$3,360.00",48,"$70.00",5.00%,"$4,800.00"
+Performance Max,Auto Segments,Transform Your Marketing in 30 Days,AI-powered analytics that help you spend smarter and convert more. Join 10k+ marketers.,120000,4800,4.00%,"$0.85","$4,080.00",144,"$28.33",3.00%,"$14,400.00"
+Display Remarketing,Past Visitors,Still Thinking About It?,Come back and see what you've been missing. Your free trial is waiting.,280000,2800,1.00%,"$0.45","$1,260.00",56,"$22.50",2.00%,"$5,600.00"
+YouTube Awareness,Video Ads,See How Top Marketers Scale Their Ads,Watch our 2-minute demo and discover why leading brands choose Acme for paid media.,500000,5000,1.00%,"$0.12","$600.00",6,"$100.00",0.12%,"$600.00"

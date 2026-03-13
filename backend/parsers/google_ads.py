@@ -26,6 +26,14 @@ COLUMN_MAP = {
     'total conv. value': 'conversion_value',
     'all conv.': 'all_conversions',
     'view-through conv.': 'view_through_conversions',
+    'headline': 'headline',
+    'headline 1': 'headline',
+    'headlines': 'headline',
+    'ad name': 'headline',
+    'description': 'description',
+    'description 1': 'description',
+    'description line 1': 'description',
+    'ad copy': 'description',
 }
 
 
@@ -99,6 +107,22 @@ def parse(file_content: bytes) -> list[NormalizedCampaign]:
         if col in df.columns:
             df[col] = df[col].apply(clean_numeric)
 
+    # Capture ad copy before aggregation (take first non-empty value per campaign)
+    copy_data = {}
+    if 'headline' in df.columns or 'description' in df.columns:
+        for _, row in df.iterrows():
+            cname = str(row['campaign_name'])
+            if cname not in copy_data:
+                copy_data[cname] = {'headline': '', 'description': ''}
+            if 'headline' in df.columns and not copy_data[cname]['headline']:
+                val = str(row.get('headline', '')).strip()
+                if val and val.lower() not in ('nan', '--', ''):
+                    copy_data[cname]['headline'] = val
+            if 'description' in df.columns and not copy_data[cname]['description']:
+                val = str(row.get('description', '')).strip()
+                if val and val.lower() not in ('nan', '--', ''):
+                    copy_data[cname]['description'] = val
+
     # Aggregate by campaign
     agg_cols = {c: 'sum' for c in ['impressions', 'clicks', 'spend', 'conversions', 'conversion_value'] if c in df.columns}
     if agg_cols:
@@ -122,8 +146,12 @@ def parse(file_content: bytes) -> list[NormalizedCampaign]:
         cpa = spend / convs if convs > 0 else 0.0
         conv_rate = convs / clicks if clicks > 0 else 0.0
 
+        cname = str(row['campaign_name'])
+        headline = copy_data.get(cname, {}).get('headline', '')
+        description = copy_data.get(cname, {}).get('description', '')
+
         campaigns.append(NormalizedCampaign(
-            campaign_name=str(row['campaign_name']),
+            campaign_name=cname,
             channel='google_ads',
             impressions=impr,
             clicks=clicks,
@@ -134,6 +162,8 @@ def parse(file_content: bytes) -> list[NormalizedCampaign]:
             avg_cpc=avg_cpc,
             cost_per_conversion=cpa,
             conversion_rate=conv_rate,
+            headline=headline,
+            description=description,
         ))
 
     return campaigns
