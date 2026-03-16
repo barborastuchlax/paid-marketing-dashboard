@@ -8,7 +8,7 @@ from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 from typing import Optional
 
-from backend.parsers import google_ads, linkedin_ads, linkedin_demographics
+from backend.parsers import google_ads, linkedin_ads, meta_ads, linkedin_demographics
 from backend.metrics import calculate_all_metrics
 from backend.scorecard import generate_scorecard
 from backend.recommendations import generate_recommendations
@@ -36,6 +36,7 @@ async def health():
 async def analyze(
     google_ads_csv: Optional[UploadFile] = File(None),
     linkedin_ads_csv: Optional[UploadFile] = File(None),
+    meta_ads_csv: Optional[UploadFile] = File(None),
     linkedin_demographics_csv: Optional[UploadFile] = File(None),
     creatives_csv: Optional[UploadFile] = File(None),
     avg_customer_ltv: float = Form(0),
@@ -44,7 +45,7 @@ async def analyze(
 ):
     import traceback
     try:
-        return await _analyze(google_ads_csv, linkedin_ads_csv, linkedin_demographics_csv, creatives_csv, avg_customer_ltv, monthly_revenue, ad_copy_text)
+        return await _analyze(google_ads_csv, linkedin_ads_csv, meta_ads_csv, linkedin_demographics_csv, creatives_csv, avg_customer_ltv, monthly_revenue, ad_copy_text)
     except Exception as e:
         return JSONResponse(
             status_code=500,
@@ -52,11 +53,11 @@ async def analyze(
         )
 
 
-async def _analyze(google_ads_csv, linkedin_ads_csv, linkedin_demographics_csv, creatives_csv, avg_customer_ltv, monthly_revenue, ad_copy_text=""):
-    if not google_ads_csv and not linkedin_ads_csv:
+async def _analyze(google_ads_csv, linkedin_ads_csv, meta_ads_csv, linkedin_demographics_csv, creatives_csv, avg_customer_ltv, monthly_revenue, ad_copy_text=""):
+    if not google_ads_csv and not linkedin_ads_csv and not meta_ads_csv:
         return JSONResponse(
             status_code=400,
-            content={"error": "Please upload at least one CSV file (Google Ads or LinkedIn Ads)."},
+            content={"error": "Please upload at least one CSV file (Google Ads, LinkedIn Ads, or Meta Ads)."},
         )
 
     campaigns = []
@@ -75,6 +76,13 @@ async def _analyze(google_ads_csv, linkedin_ads_csv, linkedin_demographics_csv, 
             campaigns.extend(linkedin_ads.parse(content))
         except Exception as e:
             errors.append(f"LinkedIn Ads CSV error: {str(e)}")
+
+    if meta_ads_csv and meta_ads_csv.filename:
+        try:
+            content = await meta_ads_csv.read()
+            campaigns.extend(meta_ads.parse(content))
+        except Exception as e:
+            errors.append(f"Meta Ads CSV error: {str(e)}")
 
     demographics = None
     if linkedin_demographics_csv and linkedin_demographics_csv.filename:

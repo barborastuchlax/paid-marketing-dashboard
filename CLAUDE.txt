@@ -1,14 +1,15 @@
 Paid Marketing Performance Analyzer
 
 PROJECT OVERVIEW
-A web dashboard that accepts Google Ads and LinkedIn Ads CSV exports, analyzes campaign performance, and displays results. Built with FastAPI + vanilla JS, deployed on Vercel.
+A web dashboard that accepts Google Ads, LinkedIn Ads, and Meta Ads CSV exports, analyzes campaign performance, and displays results. Built with FastAPI + vanilla JS, deployed on Vercel.
 
 ARCHITECTURE
 - Backend: FastAPI (main.py) — serves HTML template and /api/analyze endpoint
 - Frontend: Single HTML template (templates/index.html) with ALL CSS and JS inlined (Vercel constraint — static files don't serve properly, so everything must be inlined)
-- Parsers: backend/parsers/ — google_ads.py, linkedin_ads.py, linkedin_demographics.py
+- Parsers: backend/parsers/ — google_ads.py, linkedin_ads.py, meta_ads.py, linkedin_demographics.py
 - Analysis: backend/metrics.py, backend/scorecard.py, backend/recommendations.py
 - Models: backend/models.py — Pydantic models (NormalizedCampaign, DemographicEntry, DemographicsData)
+- Channels: google_ads, linkedin_ads, meta_ads
 
 KEY CONSTRAINTS
 - Vercel deployment: All CSS and JS MUST be inlined in templates/index.html. Do NOT create separate .css or .js files for production — they won't load on Vercel.
@@ -26,6 +27,7 @@ API
 - POST /api/analyze  — accepts multipart form with:
     - google_ads_csv (optional file)
     - linkedin_ads_csv (optional file)
+    - meta_ads_csv (optional file)
     - linkedin_demographics_csv (optional file)
     - avg_customer_ltv (float)
     - monthly_revenue (float)
@@ -43,6 +45,7 @@ FILE STRUCTURE
     parsers/
       google_ads.py                - Google Ads CSV parser
       linkedin_ads.py              - LinkedIn Ads CSV parser
+      meta_ads.py                  - Meta (Facebook/Instagram) Ads CSV parser
       linkedin_demographics.py     - LinkedIn Demographics CSV parser
   static/js/                       - JS source files (reference only — production uses inlined versions in index.html)
   test_data/                       - Sample CSV files for testing
