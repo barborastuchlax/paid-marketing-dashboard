@@ -4,7 +4,7 @@ from typing import Optional
 
 class NormalizedCampaign(BaseModel):
     campaign_name: str
-    channel: str  # "google_ads" or "linkedin_ads"
+    channel: str  # "google_ads", "linkedin_ads", or "meta_ads"
     impressions: int = 0
     clicks: int = 0
     spend: float = 0.0
@@ -61,13 +61,12 @@ class CopyAttribute(BaseModel):
     channel: str = ""
     headline: str = ""
     description: str = ""
-    hook_type: str = ""        # question, stat, bold_claim, pain_point, social_proof, benefit, curiosity
-    cta_type: str = ""         # urgency, soft, benefit_driven, direct, none
-    tone: str = ""             # casual, professional, emotional, humorous, authoritative
-    length_category: str = ""  # short, medium, long
-    emotional_trigger: str = ""  # fear, aspiration, curiosity, fomo, trust, empathy
-    value_prop: str = ""       # price, quality, convenience, exclusivity, results, innovation
-    # Performance metrics attached for correlation
+    hook_type: str = ""
+    cta_type: str = ""
+    tone: str = ""
+    length_category: str = ""
+    emotional_trigger: str = ""
+    value_prop: str = ""
     ctr: Optional[float] = None
     conversion_rate: Optional[float] = None
     cpa: Optional[float] = None
@@ -77,18 +76,18 @@ class CopyAttribute(BaseModel):
 
 
 class CopyPattern(BaseModel):
-    attribute_type: str    # e.g. "hook_type", "tone"
-    attribute_value: str   # e.g. "pain_point", "professional"
+    attribute_type: str
+    attribute_value: str
     avg_ctr: Optional[float] = None
     avg_conversion_rate: Optional[float] = None
     avg_cpa: Optional[float] = None
     sample_count: int = 0
-    performance_label: str = ""  # "top_performer", "average", "underperformer"
+    performance_label: str = ""
 
 
 class CopyInsight(BaseModel):
     insight: str
-    priority: str = "medium"  # high, medium, low
+    priority: str = "medium"
     supporting_data: str = ""
 
 

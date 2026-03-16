@@ -34,6 +34,7 @@ def calculate_all_metrics(
     # Split by channel
     google = [c for c in campaigns if c.channel == 'google_ads']
     linkedin = [c for c in campaigns if c.channel == 'linkedin_ads']
+    meta = [c for c in campaigns if c.channel == 'meta_ads']
 
     summary = compute_channel_metrics(campaigns)
     by_channel = {}
@@ -41,6 +42,8 @@ def calculate_all_metrics(
         by_channel['google_ads'] = compute_channel_metrics(google)
     if linkedin:
         by_channel['linkedin_ads'] = compute_channel_metrics(linkedin)
+    if meta:
+        by_channel['meta_ads'] = compute_channel_metrics(meta)
 
     # Per-campaign data
     by_campaign = []
