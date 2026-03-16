@@ -105,12 +105,32 @@ def parse(file_content: bytes) -> list[NormalizedCampaign]:
     df = pd.read_csv(io.StringIO(text), skiprows=header_row, sep=sep)
     df.columns = df.columns.str.strip()
 
-    # Map columns
+    # Map columns — exact match first, then prefix/contains fallback for
+    # currency-suffixed columns like "Amount Spent (EUR)", "CPC (Cost per Link Click) (EUR)"
+    PREFIX_RULES = [
+        ('amount spent', 'spend'),
+        ('total spent', 'spend'),
+        ('cost per result', 'cost_per_conversion'),
+        ('cost per action type', 'cost_per_conversion'),
+        ('cost per lead', 'cost_per_conversion'),
+        ('cpc (all)', 'avg_cpc'),
+        ('cpc (cost per link click)', 'avg_cpc'),
+        ('cpm (cost per 1,000 impressions)', 'cpm'),
+        ('website purchases conversion value', 'conversion_value'),
+        ('purchase value', 'conversion_value'),
+        ('conversion value', 'conversion_value'),
+    ]
     col_mapping = {}
     for col in df.columns:
         key = col.lower().strip()
         if key in COLUMN_MAP:
             col_mapping[col] = COLUMN_MAP[key]
+        else:
+            # Fallback: check if the column starts with a known prefix
+            for prefix, target in PREFIX_RULES:
+                if key.startswith(prefix):
+                    col_mapping[col] = target
+                    break
 
     df = df.rename(columns=col_mapping)
 
