@@ -13,6 +13,7 @@ from backend.metrics import calculate_all_metrics
 from backend.scorecard import generate_scorecard
 from backend.recommendations import generate_recommendations
 from backend.copy_analysis import analyze_copy
+from backend.visual_analysis import analyze_visuals
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -128,6 +129,24 @@ async def _analyze(google_ads_csv, linkedin_ads_csv, meta_ads_csv, linkedin_demo
     }
 
     return result
+
+
+@app.post("/api/analyze-visuals")
+async def analyze_visuals_endpoint(request: Request):
+    """Analyze visual ad creatives using Claude Vision API."""
+    import traceback
+    try:
+        body = await request.json()
+        visuals_data = body.get('visuals', [])
+        campaign_metrics = body.get('campaign_metrics', {})
+
+        result = await analyze_visuals(visuals_data, campaign_metrics)
+        return result.model_dump()
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Visual analysis error: {str(e)}", "trace": traceback.format_exc()},
+        )
 
 
 if __name__ == "__main__":
