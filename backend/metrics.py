@@ -51,6 +51,7 @@ def calculate_all_metrics(
         by_campaign.append({
             'campaign_name': c.campaign_name,
             'channel': c.channel,
+            'row_type': getattr(c, 'row_type', 'campaign'),
             'impressions': c.impressions,
             'clicks': c.clicks,
             'spend': round(c.spend, 2),

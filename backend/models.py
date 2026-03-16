@@ -5,6 +5,7 @@ from typing import Optional
 class NormalizedCampaign(BaseModel):
     campaign_name: str
     channel: str  # "google_ads", "linkedin_ads", or "meta_ads"
+    row_type: str = "campaign"  # "campaign" or "adset"
     impressions: int = 0
     clicks: int = 0
     spend: float = 0.0
