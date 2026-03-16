@@ -87,6 +87,9 @@ main {
 .file-inputs-3 {
     grid-template-columns: 1fr 1fr 1fr;
 }
+.file-inputs-4 {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
 .file-drop-zone-small {
     padding: 20px 12px;
 }
@@ -94,7 +97,7 @@ main {
     font-size: 0.82rem;
 }
 .upload-card {
-    max-width: 800px;
+    max-width: 900px;
 }
 .file-drop-zone {
     border: 2px dashed #d1d5db;
@@ -662,6 +665,7 @@ tbody tr:hover { background: #f0f4ff; }
 }
 .channel-tag.google { background: #fef3c7; color: #92400e; }
 .channel-tag.linkedin { background: #dbeafe; color: #1e40af; }
+.channel-tag.meta { background: #ede9fe; color: #5b21b6; }
 
 /* ===== Funnel ===== */
 .funnel-card {
@@ -813,7 +817,7 @@ tbody tr:hover { background: #f0f4ff; }
     }
 }
 @media (max-width: 768px) {
-    .file-inputs, .file-inputs-3, .extra-inputs, .chart-row, .demo-grid, .insight-row, .copy-input-section > div[style*="grid-template-columns"] { grid-template-columns: 1fr; }
+    .file-inputs, .file-inputs-3, .file-inputs-4, .extra-inputs, .chart-row, .demo-grid, .insight-row, .copy-input-section > div[style*="grid-template-columns"] { grid-template-columns: 1fr; }
     .copy-input-section div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
     .kpi-row { grid-template-columns: repeat(2, 1fr); }
     .upload-card { padding: 24px; }
@@ -843,10 +847,10 @@ tbody tr:hover { background: #f0f4ff; }
         <section id="upload-section" class="upload-section">
             <div class="upload-card">
                 <h2>Upload Your Ad Data</h2>
-                <p class="upload-desc">Export CSVs from Google Ads and/or LinkedIn Ads Campaign Manager, then upload below.</p>
+                <p class="upload-desc">Export CSVs from Google Ads, LinkedIn Ads, and/or Meta Ads Manager, then upload below.</p>
 
                 <form id="upload-form">
-                    <div class="file-inputs file-inputs-3">
+                    <div class="file-inputs file-inputs-4">
                         <div class="file-input-group">
                             <label for="google-csv">
                                 <div class="file-drop-zone file-drop-zone-small" id="google-drop">
@@ -865,6 +869,16 @@ tbody tr:hover { background: #f0f4ff; }
                                     <span class="file-name" id="linkedin-file-name">No file chosen</span>
                                 </div>
                                 <input type="file" id="linkedin-csv" accept=".csv" hidden>
+                            </label>
+                        </div>
+                        <div class="file-input-group">
+                            <label for="meta-csv">
+                                <div class="file-drop-zone file-drop-zone-small" id="meta-drop">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    <span class="file-label">Meta Ads CSV</span>
+                                    <span class="file-name" id="meta-file-name">No file chosen</span>
+                                </div>
+                                <input type="file" id="meta-csv" accept=".csv" hidden>
                             </label>
                         </div>
                         <div class="file-input-group">
@@ -980,10 +994,20 @@ function fmtPctRaw(n) {
     return n.toFixed(2) + '%';
 }
 function channelLabel(ch) {
-    return ch === 'google_ads' ? 'Google Ads' : ch === 'linkedin_ads' ? 'LinkedIn Ads' : ch;
+    if (ch === 'google_ads') return 'Google Ads';
+    if (ch === 'linkedin_ads') return 'LinkedIn Ads';
+    if (ch === 'meta_ads') return 'Meta Ads';
+    return ch;
 }
 function channelTagClass(ch) {
-    return ch === 'google_ads' ? 'google' : 'linkedin';
+    if (ch === 'google_ads') return 'google';
+    if (ch === 'meta_ads') return 'meta';
+    return 'linkedin';
+}
+function channelColor(ch) {
+    if (ch === 'google_ads') return COLORS.google;
+    if (ch === 'meta_ads') return COLORS.meta;
+    return COLORS.linkedin;
 }
 function gradeClass(grade) {
     if (!grade || grade === 'N/A') return 'grade-na';
@@ -1004,6 +1028,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('upload-form');
     const googleInput = document.getElementById('google-csv');
     const linkedinInput = document.getElementById('linkedin-csv');
+    const metaInput = document.getElementById('meta-csv');
     const demographicsInput = document.getElementById('demographics-csv');
     const creativesInput = document.getElementById('creatives-csv');
 
@@ -1020,11 +1045,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // File input change handlers
     googleInput.addEventListener('change', () => updateFileLabel(googleInput, 'google-file-name', 'google-drop'));
     linkedinInput.addEventListener('change', () => updateFileLabel(linkedinInput, 'linkedin-file-name', 'linkedin-drop'));
+    metaInput.addEventListener('change', () => updateFileLabel(metaInput, 'meta-file-name', 'meta-drop'));
     demographicsInput.addEventListener('change', () => updateFileLabel(demographicsInput, 'demographics-file-name', 'demographics-drop'));
     creativesInput.addEventListener('change', () => updateFileLabel(creativesInput, 'creatives-file-name', 'creatives-drop'));
 
     // Drag and drop
-    [['google-drop', googleInput], ['linkedin-drop', linkedinInput], ['demographics-drop', demographicsInput], ['creatives-drop', creativesInput]].forEach(([id, input]) => {
+    [['google-drop', googleInput], ['linkedin-drop', linkedinInput], ['meta-drop', metaInput], ['demographics-drop', demographicsInput], ['creatives-drop', creativesInput]].forEach(([id, input]) => {
         const zone = document.getElementById(id);
         zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
         zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
@@ -1047,8 +1073,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const googleFile = googleInput.files[0];
         const linkedinFile = linkedinInput.files[0];
+        const metaFile = metaInput.files[0];
 
-        if (!googleFile && !linkedinFile) {
+        if (!googleFile && !linkedinFile && !metaFile) {
             errEl.textContent = 'Please upload at least one CSV file.';
             errEl.classList.remove('hidden');
             return;
@@ -1065,6 +1092,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData();
         if (googleFile) formData.append('google_ads_csv', googleFile);
         if (linkedinFile) formData.append('linkedin_ads_csv', linkedinFile);
+        if (metaFile) formData.append('meta_ads_csv', metaFile);
         if (demographicsFile) formData.append('linkedin_demographics_csv', demographicsFile);
         if (creativesFile) formData.append('creatives_csv', creativesFile);
         formData.append('avg_customer_ltv', document.getElementById('ltv-input').value || '0');
@@ -1150,6 +1178,7 @@ Chart.defaults.color = '#6b7280';
 const COLORS = {
     google: '#f59e0b',
     linkedin: '#3b82f6',
+    meta: '#8b5cf6',
     palette: ['#2563eb', '#f59e0b', '#059669', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#6366f1'],
 };
 
@@ -1360,7 +1389,7 @@ function renderDashboard(data) {
             }
         }));
 
-        const chColors = Object.keys(data.by_channel).map(ch => ch === 'google_ads' ? COLORS.google : COLORS.linkedin);
+        const chColors = Object.keys(data.by_channel).map(ch => channelColor(ch));
         chartInstances.push(new Chart(document.getElementById('chart-spend-dist'), {
             type: 'doughnut',
             data: {
@@ -1379,7 +1408,7 @@ function renderDashboard(data) {
         // CPA chart
         const campaignsWithConv = campaigns.filter(c => c.conversions > 0);
         const cpaSorted = [...campaignsWithConv].sort((a, b) => b.cpa - a.cpa);
-        const cpaColors = cpaSorted.map(c => c.channel === 'google_ads' ? COLORS.google : COLORS.linkedin);
+        const cpaColors = cpaSorted.map(c => channelColor(c.channel));
 
         chartInstances.push(new Chart(document.getElementById('chart-cpa-campaign'), {
             type: 'bar',
@@ -1392,7 +1421,7 @@ function renderDashboard(data) {
 
         // CTR chart
         const ctrSorted = [...campaigns].sort((a, b) => b.ctr - a.ctr);
-        const ctrColors = ctrSorted.map(c => c.channel === 'google_ads' ? COLORS.google : COLORS.linkedin);
+        const ctrColors = ctrSorted.map(c => channelColor(c.channel));
 
         chartInstances.push(new Chart(document.getElementById('chart-ctr-campaign'), {
             type: 'bar',
