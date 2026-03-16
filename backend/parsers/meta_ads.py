@@ -52,8 +52,13 @@ COLUMN_MAP = {
 
 
 def clean_numeric(val) -> float:
-    if pd.isna(val):
-        return 0.0
+    if isinstance(val, pd.Series):
+        val = val.iloc[0] if len(val) > 0 else 0
+    try:
+        if pd.isna(val):
+            return 0.0
+    except (ValueError, TypeError):
+        pass
     if isinstance(val, (int, float)):
         return float(val)
     s = str(val).strip()
@@ -72,6 +77,7 @@ def clean_numeric(val) -> float:
 
 
 def parse(file_content: bytes) -> list[NormalizedCampaign]:
+    # Try multiple encodings — Meta exports can be UTF-8, UTF-8-BOM, or UTF-16
     for encoding in ('utf-8-sig', 'utf-16', 'latin-1'):
         try:
             text = file_content.decode(encoding)
@@ -80,6 +86,8 @@ def parse(file_content: bytes) -> list[NormalizedCampaign]:
             continue
     else:
         text = file_content.decode('utf-8', errors='replace')
+
+    # Find the header row (Meta exports sometimes have metadata rows at the top)
     lines = text.strip().split('\n')
     header_row = 0
     for i, line in enumerate(lines):
@@ -88,32 +96,57 @@ def parse(file_content: bytes) -> list[NormalizedCampaign]:
            ('impressions' in lower or 'clicks' in lower or 'spend' in lower or 'cost' in lower or 'amount spent' in lower):
             header_row = i
             break
+
+    # Auto-detect delimiter (comma vs tab)
     sample = lines[header_row] if header_row < len(lines) else lines[0]
     dialect = csv.Sniffer().sniff(sample, delimiters=',\t;|')
     sep = dialect.delimiter
+
     df = pd.read_csv(io.StringIO(text), skiprows=header_row, sep=sep)
     df.columns = df.columns.str.strip()
+
+    # Map columns
     col_mapping = {}
     for col in df.columns:
         key = col.lower().strip()
         if key in COLUMN_MAP:
             col_mapping[col] = COLUMN_MAP[key]
+
     df = df.rename(columns=col_mapping)
+
+    # Remove duplicate columns (e.g. both "Results" and "Conversions" mapping to "conversions")
+    df = df.loc[:, ~df.columns.duplicated(keep='first')]
+
     if 'campaign_name' not in df.columns:
-        raise ValueError("Could not find 'Campaign Name' column in Meta Ads CSV.")
+        raise ValueError("Could not find 'Campaign Name' column in Meta Ads CSV. Please ensure your export includes campaign names.")
+
     df = df.dropna(subset=['campaign_name'])
-    numeric_cols = ['impressions', 'clicks', 'spend', 'conversions', 'conversion_value', 'ctr', 'avg_cpc', 'cost_per_conversion', 'conversion_rate', 'leads', 'purchases']
+
+    # Clean numeric columns
+    numeric_cols = ['impressions', 'clicks', 'spend', 'conversions',
+                    'conversion_value', 'ctr', 'avg_cpc',
+                    'cost_per_conversion', 'conversion_rate',
+                    'leads', 'purchases']
+
     for col in numeric_cols:
         if col in df.columns:
             df[col] = df[col].apply(clean_numeric)
-    if 'conversions' not in df.columns or df.get('conversions', pd.Series([0])).sum() == 0:
+
+    # If no conversions column but leads or purchases exist, use them
+    has_convs = 'conversions' in df.columns and float(df['conversions'].sum()) > 0
+    if not has_convs:
         if 'purchases' in df.columns and df['purchases'].sum() > 0:
             df['conversions'] = df['purchases']
         elif 'leads' in df.columns and df['leads'].sum() > 0:
             df['conversions'] = df['leads']
+
+    # Normalize CTR — detect if it's already a decimal or a percentage
     if 'ctr' in df.columns:
-        if df['ctr'].max() > 1:
+        max_ctr = df['ctr'].max()
+        if max_ctr > 1:  # likely percentages that weren't caught
             df['ctr'] = df['ctr'] / 100.0
+
+    # Capture ad copy before aggregation
     copy_data = {}
     if 'headline' in df.columns or 'description' in df.columns:
         for _, row in df.iterrows():
@@ -128,6 +161,8 @@ def parse(file_content: bytes) -> list[NormalizedCampaign]:
                 val = str(row.get('description', '')).strip()
                 if val and val.lower() not in ('nan', '--', ''):
                     copy_data[cname]['description'] = val
+
+    # Aggregate by campaign (Meta exports can have daily rows)
     sum_cols = {c: 'sum' for c in ['impressions', 'clicks', 'spend', 'conversions', 'conversion_value'] if c in df.columns}
     if sum_cols:
         grouped = df.groupby('campaign_name', as_index=False).agg(sum_cols)
@@ -136,6 +171,7 @@ def parse(file_content: bytes) -> list[NormalizedCampaign]:
         for c in ['impressions', 'clicks', 'spend', 'conversions', 'conversion_value']:
             if c not in grouped.columns:
                 grouped[c] = 0
+
     campaigns = []
     for _, row in grouped.iterrows():
         impr = int(row.get('impressions', 0))
@@ -143,12 +179,30 @@ def parse(file_content: bytes) -> list[NormalizedCampaign]:
         spend = float(row.get('spend', 0))
         convs = float(row.get('conversions', 0))
         conv_val = float(row.get('conversion_value', 0))
+
         ctr = clicks / impr if impr > 0 else 0.0
         avg_cpc = spend / clicks if clicks > 0 else 0.0
         cpa = spend / convs if convs > 0 else 0.0
         conv_rate = convs / clicks if clicks > 0 else 0.0
+
         cname = str(row['campaign_name'])
         headline = copy_data.get(cname, {}).get('headline', '')
         description = copy_data.get(cname, {}).get('description', '')
-        campaigns.append(NormalizedCampaign(campaign_name=cname, channel='meta_ads', impressions=impr, clicks=clicks, spend=spend, conversions=convs, conversion_value=conv_val, ctr=ctr, avg_cpc=avg_cpc, cost_per_conversion=cpa, conversion_rate=conv_rate, headline=headline, description=description))
+
+        campaigns.append(NormalizedCampaign(
+            campaign_name=cname,
+            channel='meta_ads',
+            impressions=impr,
+            clicks=clicks,
+            spend=spend,
+            conversions=convs,
+            conversion_value=conv_val,
+            ctr=ctr,
+            avg_cpc=avg_cpc,
+            cost_per_conversion=cpa,
+            conversion_rate=conv_rate,
+            headline=headline,
+            description=description,
+        ))
+
     return campaigns
