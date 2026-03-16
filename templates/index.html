@@ -631,6 +631,155 @@ tbody tr:hover { background: #f0f4ff; }
     margin-top: 8px;
 }
 
+/* ===== Visual Creatives ===== */
+.visual-col-header { width: 60px; min-width: 60px; }
+.visual-cell { width: 60px; padding: 4px !important; }
+.visual-drop-zone {
+    width: 40px;
+    height: 40px;
+    border: 2px dashed #d1d5db;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 0 auto;
+    background: #f9fafb;
+    overflow: hidden;
+}
+.visual-drop-zone:hover { border-color: #7c3aed; background: #f5f3ff; }
+.visual-drop-zone.drag-over { border-color: #7c3aed; background: #ede9fe; border-style: solid; }
+.visual-drop-zone.has-visual { border-color: #7c3aed; border-style: solid; background: #fff; }
+.visual-icon { font-size: 16px; color: #9ca3af; line-height: 1; }
+.visual-drop-zone.has-visual .visual-icon { color: #7c3aed; }
+.visual-thumb { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
+.visual-count-badge {
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    background: #ede9fe;
+    color: #5b21b6;
+    border-radius: 12px;
+    font-weight: 600;
+}
+.btn-visual-analyze {
+    padding: 6px 16px;
+    background: #7c3aed;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-visual-analyze:hover { background: #6d28d9; }
+.btn-visual-analyze:disabled { opacity: 0.6; cursor: not-allowed; }
+.visual-popover {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+    padding: 16px;
+    width: 260px;
+}
+.visual-popover-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.visual-popover-btn {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    background: #7c3aed;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+}
+.visual-popover-btn:hover { background: #6d28d9; }
+.visual-popover-divider {
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.75rem;
+    margin: 10px 0;
+}
+.visual-popover-input {
+    width: 100%;
+    padding: 7px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    margin-bottom: 8px;
+}
+.visual-popover-input:focus { outline: none; border-color: #7c3aed; }
+.visual-popover-save {
+    width: 100%;
+    padding: 7px 12px;
+    background: #059669;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+.visual-popover-save:hover { background: #047857; }
+.visual-popover-remove {
+    width: 100%;
+    padding: 7px 12px;
+    background: #fff;
+    color: #dc2626;
+    border: 1px solid #fca5a5;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 6px;
+}
+.visual-popover-remove:hover { background: #fef2f2; }
+.visual-ad-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 16px 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 12px;
+    display: flex;
+    gap: 16px;
+}
+.visual-ad-left { flex-shrink: 0; width: 120px; }
+.visual-ad-thumb { width: 120px; height: 90px; object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb; }
+.visual-ad-placeholder {
+    width: 120px;
+    height: 90px;
+    background: #f3f4f6;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+    font-size: 0.82rem;
+}
+.visual-ad-right { flex: 1; min-width: 0; }
+.visual-ad-desc { font-size: 0.82rem; color: #6b7280; margin-bottom: 8px; font-style: italic; }
+.visual-video-badge {
+    display: inline-block;
+    padding: 1px 8px;
+    background: #fef3c7;
+    color: #92400e;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-left: 6px;
+}
+
 /* ===== Report ===== */
 .exec-summary {
     background: #fff;
@@ -958,6 +1107,7 @@ tbody tr:hover { background: #f0f4ff; }
                 <button class="tab" data-tab="demographics">Demographics</button>
                 <button class="tab" data-tab="recommendations">Recommendations</button>
                 <button class="tab" data-tab="copy-analysis">Copy Analysis</button>
+                <button class="tab" data-tab="visual-analysis">Visual Analysis</button>
                 <button class="btn-secondary btn-new-analysis" id="new-analysis-btn">New Analysis</button>
             </div>
 
@@ -967,6 +1117,7 @@ tbody tr:hover { background: #f0f4ff; }
             <div id="tab-demographics" class="tab-content"></div>
             <div id="tab-recommendations" class="tab-content"></div>
             <div id="tab-copy-analysis" class="tab-content"></div>
+            <div id="tab-visual-analysis" class="tab-content"></div>
         </section>
     </main>
 
@@ -974,6 +1125,7 @@ tbody tr:hover { background: #f0f4ff; }
 // ===== Global State =====
 let analysisData = null;
 let chartInstances = [];
+let campaignVisuals = {}; // {campaign_name: {image_base64, media_type, video_url, thumbnail}}
 
 // ===== Helpers =====
 function fmt(n, decimals = 0) {
@@ -1168,6 +1320,8 @@ function showResults() {
     renderDemographics(analysisData);
     renderRecommendations(analysisData);
     renderCopyAnalysis(analysisData);
+    renderVisualAnalysis(analysisData);
+    campaignVisuals = {}; // Reset visuals for new analysis
 }
 
 // ===== Dashboard =====
@@ -1552,12 +1706,19 @@ function renderReport(data) {
 
     html += `
     <div class="table-card">
-        <h3>Campaign Details</h3>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <h3>Campaign Details</h3>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <span id="visual-count-badge" class="visual-count-badge" style="display:none;">0 visuals</span>
+                <button class="btn-visual-analyze" id="btn-analyze-visuals" onclick="runVisualAnalysis()" style="display:none;">Analyze Visuals</button>
+            </div>
+        </div>
         <table id="campaign-table">
             <thead>
                 <tr>
                     <th data-sort="campaign_name">Campaign</th>
                     <th data-sort="channel">Channel</th>
+                    <th class="text-center visual-col-header">Visual</th>
                     <th data-sort="spend" class="text-right">Spend</th>
                     <th data-sort="impressions" class="text-right">Impressions</th>
                     <th data-sort="clicks" class="text-right">Clicks</th>
@@ -1572,10 +1733,28 @@ function renderReport(data) {
             <tbody>`;
 
     for (const c of campaigns) {
+        const cid = btoa(encodeURIComponent(c.campaign_name)).replace(/[^a-zA-Z0-9]/g, '');
+        const hasVisual = campaignVisuals[c.campaign_name];
         html += `
                 <tr>
                     <td title="${c.campaign_name}">${c.campaign_name.length > 35 ? c.campaign_name.slice(0, 33) + '...' : c.campaign_name}</td>
                     <td><span class="channel-tag ${channelTagClass(c.channel)}">${channelLabel(c.channel)}</span></td>
+                    <td class="text-center visual-cell">
+                        <div class="visual-drop-zone ${hasVisual ? 'has-visual' : ''}"
+                             id="vdz-${cid}"
+                             data-campaign="${c.campaign_name}"
+                             ondragover="event.preventDefault(); this.classList.add('drag-over');"
+                             ondragleave="this.classList.remove('drag-over');"
+                             ondrop="handleVisualDrop(event, this);"
+                             onclick="handleVisualClick(this);">
+                            ${hasVisual
+                                ? (hasVisual.thumbnail
+                                    ? `<img src="${hasVisual.thumbnail}" class="visual-thumb" />`
+                                    : (hasVisual.video_url ? '<span class="visual-icon">&#9654;</span>' : '<span class="visual-icon">&#10003;</span>'))
+                                : '<span class="visual-icon">+</span>'}
+                        </div>
+                        <input type="file" accept="image/*" class="visual-file-input" id="vfi-${cid}" data-campaign="${c.campaign_name}" style="display:none" onchange="handleVisualFileSelect(event, this);">
+                    </td>
                     <td class="text-right">${fmtCurrency(c.spend)}</td>
                     <td class="text-right">${fmt(c.impressions)}</td>
                     <td class="text-right">${fmt(c.clicks)}</td>
@@ -1619,10 +1798,28 @@ function setupSortableTable(tableId, campaigns) {
             const tbody = table.querySelector('tbody');
             tbody.innerHTML = '';
             for (const c of sorted) {
+                const cid = btoa(encodeURIComponent(c.campaign_name)).replace(/[^a-zA-Z0-9]/g, '');
+                const hasVisual = campaignVisuals[c.campaign_name];
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td title="${c.campaign_name}">${c.campaign_name.length > 35 ? c.campaign_name.slice(0, 33) + '...' : c.campaign_name}</td>
                     <td><span class="channel-tag ${channelTagClass(c.channel)}">${channelLabel(c.channel)}</span></td>
+                    <td class="text-center visual-cell">
+                        <div class="visual-drop-zone ${hasVisual ? 'has-visual' : ''}"
+                             id="vdz-${cid}"
+                             data-campaign="${c.campaign_name}"
+                             ondragover="event.preventDefault(); this.classList.add('drag-over');"
+                             ondragleave="this.classList.remove('drag-over');"
+                             ondrop="handleVisualDrop(event, this);"
+                             onclick="handleVisualClick(this);">
+                            ${hasVisual
+                                ? (hasVisual.thumbnail
+                                    ? `<img src="${hasVisual.thumbnail}" class="visual-thumb" />`
+                                    : (hasVisual.video_url ? '<span class="visual-icon">&#9654;</span>' : '<span class="visual-icon">&#10003;</span>'))
+                                : '<span class="visual-icon">+</span>'}
+                        </div>
+                        <input type="file" accept="image/*" class="visual-file-input" id="vfi-${cid}" data-campaign="${c.campaign_name}" style="display:none" onchange="handleVisualFileSelect(event, this);">
+                    </td>
                     <td class="text-right">${fmtCurrency(c.spend)}</td>
                     <td class="text-right">${fmt(c.impressions)}</td>
                     <td class="text-right">${fmt(c.clicks)}</td>
@@ -2114,6 +2311,341 @@ function renderCopyAnalysis(data) {
         html += '<h3 class="copy-section-title" style="margin-top: 24px;">Copy Recommendations</h3>';
         html += '<ul class="copy-rec-list">';
         for (const rec of ca.recommendations) {
+            html += `<li>${rec}</li>`;
+        }
+        html += '</ul>';
+    }
+
+    container.innerHTML = html;
+}
+
+// ===== Visual Creatives =====
+function handleVisualDrop(event, zone) {
+    event.preventDefault();
+    zone.classList.remove('drag-over');
+    const campaignName = zone.dataset.campaign;
+    const files = event.dataTransfer.files;
+    if (files.length > 0 && files[0].type.startsWith('image/')) {
+        processVisualFile(files[0], campaignName, zone);
+    }
+}
+
+function handleVisualClick(zone) {
+    const campaignName = zone.dataset.campaign;
+    // Show a popover for image upload or video link
+    const existing = document.getElementById('visual-popover');
+    if (existing) existing.remove();
+
+    const rect = zone.getBoundingClientRect();
+    const popover = document.createElement('div');
+    popover.id = 'visual-popover';
+    popover.className = 'visual-popover';
+    popover.innerHTML = `
+        <div class="visual-popover-title">${campaignName.length > 30 ? campaignName.slice(0, 28) + '...' : campaignName}</div>
+        <label class="visual-popover-btn" style="cursor:pointer;">
+            <input type="file" accept="image/*" style="display:none" onchange="popoverFileSelect(event, '${campaignName.replace(/'/g, "\\'")}')"> Upload Screenshot
+        </label>
+        <div class="visual-popover-divider">or</div>
+        <input type="text" class="visual-popover-input" placeholder="Paste Google Drive video link" id="video-link-input"
+               value="${campaignVisuals[campaignName]?.video_url || ''}">
+        <button class="visual-popover-save" onclick="saveVideoLink('${campaignName.replace(/'/g, "\\'")}')">Save Link</button>
+        ${campaignVisuals[campaignName] ? '<button class="visual-popover-remove" onclick="removeVisual(\'' + campaignName.replace(/'/g, "\\'") + '\')">Remove</button>' : ''}
+    `;
+    popover.style.position = 'fixed';
+    popover.style.top = (rect.bottom + 4) + 'px';
+    popover.style.left = Math.max(8, rect.left - 100) + 'px';
+    popover.style.zIndex = '9999';
+    document.body.appendChild(popover);
+
+    // Close on outside click
+    setTimeout(() => {
+        document.addEventListener('click', function closePopover(e) {
+            if (!popover.contains(e.target) && e.target !== zone && !zone.contains(e.target)) {
+                popover.remove();
+                document.removeEventListener('click', closePopover);
+            }
+        });
+    }, 50);
+}
+
+function popoverFileSelect(event, campaignName) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const zone = document.querySelector(`.visual-drop-zone[data-campaign="${campaignName}"]`);
+    processVisualFile(file, campaignName, zone);
+    const popover = document.getElementById('visual-popover');
+    if (popover) popover.remove();
+}
+
+function processVisualFile(file, campaignName, zone) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const base64 = e.target.result.split(',')[1];
+        const thumbnail = e.target.result;
+        campaignVisuals[campaignName] = {
+            image_base64: base64,
+            media_type: file.type || 'image/png',
+            video_url: '',
+            thumbnail: thumbnail,
+        };
+        zone.classList.add('has-visual');
+        zone.innerHTML = `<img src="${thumbnail}" class="visual-thumb" />`;
+        updateVisualCount();
+    };
+    reader.readAsDataURL(file);
+}
+
+function handleVisualFileSelect(event, input) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const campaignName = input.dataset.campaign;
+    const zone = document.querySelector(`.visual-drop-zone[data-campaign="${campaignName}"]`);
+    processVisualFile(file, campaignName, zone);
+}
+
+function saveVideoLink(campaignName) {
+    const input = document.getElementById('video-link-input');
+    const url = input.value.trim();
+    if (!url) return;
+    const zone = document.querySelector(`.visual-drop-zone[data-campaign="${campaignName}"]`);
+    if (!campaignVisuals[campaignName]) {
+        campaignVisuals[campaignName] = {};
+    }
+    campaignVisuals[campaignName].video_url = url;
+    if (!campaignVisuals[campaignName].image_base64) {
+        zone.classList.add('has-visual');
+        zone.innerHTML = '<span class="visual-icon">&#9654;</span>';
+    }
+    updateVisualCount();
+    const popover = document.getElementById('visual-popover');
+    if (popover) popover.remove();
+}
+
+function removeVisual(campaignName) {
+    delete campaignVisuals[campaignName];
+    const zone = document.querySelector(`.visual-drop-zone[data-campaign="${campaignName}"]`);
+    if (zone) {
+        zone.classList.remove('has-visual');
+        zone.innerHTML = '<span class="visual-icon">+</span>';
+    }
+    updateVisualCount();
+    const popover = document.getElementById('visual-popover');
+    if (popover) popover.remove();
+}
+
+function updateVisualCount() {
+    const count = Object.keys(campaignVisuals).length;
+    const badge = document.getElementById('visual-count-badge');
+    const btn = document.getElementById('btn-analyze-visuals');
+    if (count > 0) {
+        badge.style.display = 'inline-block';
+        badge.textContent = count + ' visual' + (count > 1 ? 's' : '');
+        btn.style.display = 'inline-block';
+    } else {
+        badge.style.display = 'none';
+        btn.style.display = 'none';
+    }
+}
+
+async function runVisualAnalysis() {
+    const btn = document.getElementById('btn-analyze-visuals');
+    const origText = btn.textContent;
+    btn.textContent = 'Analyzing...';
+    btn.disabled = true;
+
+    // Build visuals data
+    const visuals = [];
+    for (const [name, v] of Object.entries(campaignVisuals)) {
+        visuals.push({
+            campaign_name: name,
+            image_base64: v.image_base64 || '',
+            media_type: v.media_type || 'image/png',
+            video_url: v.video_url || '',
+        });
+    }
+
+    // Build campaign metrics lookup
+    const campaignMetrics = {};
+    if (analysisData && analysisData.by_campaign) {
+        for (const c of analysisData.by_campaign) {
+            campaignMetrics[c.campaign_name] = {
+                channel: c.channel,
+                ctr_pct: c.ctr != null ? +(c.ctr * 100).toFixed(2) : null,
+                conversion_rate_pct: c.conversion_rate != null ? +(c.conversion_rate * 100).toFixed(2) : null,
+                cpa: c.cpa != null ? +c.cpa.toFixed(2) : null,
+                spend: c.spend != null ? +c.spend.toFixed(2) : null,
+                conversions: c.conversions != null ? +c.conversions : null,
+            };
+        }
+    }
+
+    try {
+        const res = await fetch('/api/analyze-visuals', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({visuals, campaign_metrics: campaignMetrics}),
+        });
+        const result = await res.json();
+        if (result.error) {
+            alert('Visual analysis error: ' + result.error);
+        } else {
+            analysisData.visual_analysis = result;
+            renderVisualAnalysis(analysisData);
+            // Switch to visual analysis tab
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-tab="visual-analysis"]').classList.add('active');
+            document.getElementById('tab-visual-analysis').classList.add('active');
+        }
+    } catch(e) {
+        alert('Visual analysis failed: ' + e.message);
+    }
+
+    btn.textContent = origText;
+    btn.disabled = false;
+}
+
+// ===== Visual Analysis Rendering =====
+function renderVisualAnalysis(data) {
+    const container = document.getElementById('tab-visual-analysis');
+    const va = data.visual_analysis;
+
+    if (!va || va.visuals_analyzed === 0) {
+        container.innerHTML = `
+            <div class="exec-summary">
+                <h3>Visual Creative Analysis</h3>
+                <p>No visual creatives uploaded yet. To use this feature:</p>
+                <ol style="margin-top: 12px; padding-left: 20px; color: #4b5563; font-size: 0.9rem; line-height: 2;">
+                    <li>Go to the <strong>Report</strong> tab</li>
+                    <li>Drag & drop ad screenshots onto campaign rows (the <strong>+</strong> column)</li>
+                    <li>Or click <strong>+</strong> to upload an image or paste a Google Drive video link</li>
+                    <li>Click <strong>Analyze Visuals</strong> to run the analysis</li>
+                </ol>
+            </div>`;
+        return;
+    }
+
+    let html = '';
+
+    // Summary stats
+    const attrs = va.visual_attributes || [];
+    const styles = [...new Set(attrs.map(a => a.visual_style).filter(Boolean))];
+    const schemes = [...new Set(attrs.map(a => a.color_scheme).filter(Boolean))];
+    const topCTR = attrs.length > 0 ? Math.max(...attrs.map(a => a.ctr || 0)) : 0;
+    const videoCount = attrs.filter(a => a.has_video).length;
+
+    html += `
+        <div class="copy-summary-row">
+            <div class="copy-stat-card">
+                <div class="copy-stat-value">${va.visuals_analyzed}</div>
+                <div class="copy-stat-label">Visuals Analyzed</div>
+            </div>
+            <div class="copy-stat-card">
+                <div class="copy-stat-value">${styles.length}</div>
+                <div class="copy-stat-label">Visual Styles</div>
+            </div>
+            <div class="copy-stat-card">
+                <div class="copy-stat-value">${schemes.length}</div>
+                <div class="copy-stat-label">Color Schemes</div>
+            </div>
+            <div class="copy-stat-card">
+                <div class="copy-stat-value">${topCTR.toFixed(2)}%</div>
+                <div class="copy-stat-label">Best CTR</div>
+            </div>
+        </div>`;
+
+    // Insights
+    if (va.insights && va.insights.length > 0) {
+        html += '<h3 class="copy-section-title">Visual Insights</h3>';
+        for (const insight of va.insights) {
+            html += `
+                <div class="copy-insight-card ${insight.priority}">
+                    <div class="copy-insight-text">${insight.insight}</div>
+                    ${insight.supporting_data ? `<div class="copy-insight-data">${insight.supporting_data}</div>` : ''}
+                </div>`;
+        }
+    }
+
+    // Visual Performance Patterns
+    if (va.patterns && va.patterns.length > 0) {
+        html += '<h3 class="copy-section-title" style="margin-top: 24px;">Visual Performance Patterns</h3>';
+        const grouped = {};
+        for (const p of va.patterns) {
+            if (!grouped[p.attribute_type]) grouped[p.attribute_type] = [];
+            grouped[p.attribute_type].push(p);
+        }
+        const typeLabels = {
+            visual_style: 'Visual Style', color_scheme: 'Color Scheme', imagery_type: 'Imagery Type',
+            text_overlay: 'Text Overlay', cta_visual: 'CTA Visual', composition: 'Composition',
+            emotional_feel: 'Emotional Feel', brand_presence: 'Brand Presence',
+        };
+        html += '<div class="copy-pattern-grid">';
+        for (const [type, patterns] of Object.entries(grouped)) {
+            const maxCTR = Math.max(...patterns.map(p => p.avg_ctr || 0), 1);
+            html += `<div class="copy-pattern-card">
+                <div class="copy-pattern-title">${typeLabels[type] || type.replace(/_/g, ' ')} (by CTR)</div>`;
+            const sorted = [...patterns].sort((a, b) => (b.avg_ctr || 0) - (a.avg_ctr || 0));
+            for (const p of sorted) {
+                const pct = maxCTR > 0 ? ((p.avg_ctr || 0) / maxCTR) * 100 : 0;
+                const colors = { top_performer: '#059669', average: '#f59e0b', underperformer: '#ef4444' };
+                const color = colors[p.performance_label] || '#7c3aed';
+                html += `
+                    <div class="copy-pattern-bar">
+                        <span class="copy-pattern-bar-label">${p.attribute_value.replace(/_/g, ' ')}</span>
+                        <div class="copy-pattern-bar-track">
+                            <div class="copy-pattern-bar-fill" style="width: ${pct}%; background: ${color};"></div>
+                        </div>
+                        <span class="copy-pattern-bar-value">${p.avg_ctr != null ? p.avg_ctr.toFixed(2) + '%' : '-'}</span>
+                    </div>`;
+            }
+            html += '</div>';
+        }
+        html += '</div>';
+    }
+
+    // All Visuals with Classification Tags
+    if (attrs.length > 0) {
+        html += '<h3 class="copy-section-title" style="margin-top: 24px;">All Creatives &mdash; Visual Classification</h3>';
+        const sortedAttrs = [...attrs].sort((a, b) => (b.ctr || 0) - (a.ctr || 0));
+        for (const ad of sortedAttrs) {
+            const thumb = campaignVisuals[ad.campaign_name]?.thumbnail;
+            html += `
+                <div class="visual-ad-card">
+                    <div class="visual-ad-left">
+                        ${thumb ? `<img src="${thumb}" class="visual-ad-thumb" />` : (ad.has_video ? '<div class="visual-ad-placeholder">&#9654; Video</div>' : '<div class="visual-ad-placeholder">No image</div>')}
+                    </div>
+                    <div class="visual-ad-right">
+                        <div class="copy-ad-header">
+                            <span class="copy-ad-name">${ad.campaign_name}
+                                <span class="channel-tag ${channelTagClass(ad.channel)}" style="margin-left: 8px;">${channelLabel(ad.channel)}</span>
+                                ${ad.has_video ? '<span class="visual-video-badge">Video</span>' : ''}
+                            </span>
+                            <div class="copy-ad-metrics">
+                                <span>CTR: <strong>${ad.ctr != null ? ad.ctr.toFixed(2) + '%' : '-'}</strong></span>
+                                <span>Conv: <strong>${ad.conversion_rate != null ? ad.conversion_rate.toFixed(2) + '%' : '-'}</strong></span>
+                                ${ad.cpa ? `<span>CPA: <strong>$${ad.cpa.toFixed(2)}</strong></span>` : ''}
+                            </div>
+                        </div>
+                        ${ad.creative_description ? `<div class="visual-ad-desc">${ad.creative_description}</div>` : ''}
+                        <div class="copy-ad-tags">
+                            ${ad.visual_style ? `<span class="copy-tag" style="background:#ede9fe;color:#6d28d9;">${ad.visual_style.replace(/_/g, ' ')}</span>` : ''}
+                            ${ad.color_scheme ? `<span class="copy-tag" style="background:#fef3c7;color:#92400e;">${ad.color_scheme.replace(/_/g, ' ')}</span>` : ''}
+                            ${ad.imagery_type ? `<span class="copy-tag" style="background:#dbeafe;color:#1e40af;">${ad.imagery_type.replace(/_/g, ' ')}</span>` : ''}
+                            ${ad.text_overlay && ad.text_overlay !== 'none' ? `<span class="copy-tag" style="background:#f3e8ff;color:#7e22ce;">${ad.text_overlay.replace(/_/g, ' ')}</span>` : ''}
+                            ${ad.composition ? `<span class="copy-tag" style="background:#ecfdf5;color:#065f46;">${ad.composition.replace(/_/g, ' ')}</span>` : ''}
+                            ${ad.emotional_feel ? `<span class="copy-tag" style="background:#fce7f3;color:#9d174d;">${ad.emotional_feel.replace(/_/g, ' ')}</span>` : ''}
+                            ${ad.cta_visual && ad.cta_visual !== 'none' ? `<span class="copy-tag" style="background:#fff7ed;color:#c2410c;">CTA: ${ad.cta_visual.replace(/_/g, ' ')}</span>` : ''}
+                        </div>
+                    </div>
+                </div>`;
+        }
+    }
+
+    // Recommendations
+    if (va.recommendations && va.recommendations.length > 0) {
+        html += '<h3 class="copy-section-title" style="margin-top: 24px;">Visual Creative Recommendations</h3>';
+        html += '<ul class="copy-rec-list">';
+        for (const rec of va.recommendations) {
             html += `<li>${rec}</li>`;
         }
         html += '</ul>';
