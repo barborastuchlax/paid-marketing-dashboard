@@ -654,6 +654,38 @@ tbody tr:hover { background: #f0f4ff; }
 .visual-icon { font-size: 16px; color: #9ca3af; line-height: 1; }
 .visual-drop-zone.has-visual .visual-icon { color: #7c3aed; }
 .visual-thumb { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
+.visual-multi-badge {
+    position: absolute; bottom: -2px; right: -2px;
+    background: #7c3aed; color: #fff; font-size: 0.6rem; font-weight: 700;
+    padding: 1px 4px; border-radius: 8px; line-height: 1.2;
+}
+.visual-drop-zone { position: relative; }
+.visual-gallery-row td { background: #f9f8ff !important; }
+.visual-gallery-inner { padding: 10px 16px; }
+.visual-gallery-grid { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.visual-gallery-item {
+    position: relative; width: 72px; height: 72px; border-radius: 6px;
+    overflow: hidden; border: 1px solid #e5e7eb; background: #fff;
+}
+.visual-gallery-item.visual-gallery-video {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: #f5f3ff; font-size: 0.7rem; color: #7c3aed;
+}
+.visual-gallery-url { font-size: 0.58rem; color: #6b7280; text-align: center; padding: 0 4px; word-break: break-all; }
+.visual-gallery-img { width: 100%; height: 100%; object-fit: cover; }
+.visual-gallery-remove {
+    position: absolute; top: 2px; right: 2px; width: 18px; height: 18px;
+    background: rgba(220,38,38,0.85); color: #fff; border: none; border-radius: 50%;
+    font-size: 12px; line-height: 1; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; padding: 0;
+}
+.visual-gallery-remove:hover { background: #dc2626; }
+.visual-gallery-add {
+    width: 72px; height: 72px; border: 2px dashed #d1d5db; border-radius: 6px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; color: #9ca3af; transition: all 0.2s; gap: 2px;
+}
+.visual-gallery-add:hover { border-color: #7c3aed; color: #7c3aed; background: #f5f3ff; }
 .visual-count-badge {
     font-size: 0.75rem;
     padding: 3px 10px;
@@ -1125,7 +1157,7 @@ tbody tr:hover { background: #f0f4ff; }
 // ===== Global State =====
 let analysisData = null;
 let chartInstances = [];
-let campaignVisuals = {}; // {campaign_name: {image_base64, media_type, video_url, thumbnail}}
+let campaignVisuals = {}; // {campaign_name: [{image_base64, media_type, video_url, thumbnail}, ...]}
 
 // ===== Helpers =====
 function fmt(n, decimals = 0) {
@@ -1734,10 +1766,13 @@ function renderReport(data) {
 
     for (const c of campaigns) {
         const cid = btoa(encodeURIComponent(c.campaign_name)).replace(/[^a-zA-Z0-9]/g, '');
-        const hasVisual = campaignVisuals[c.campaign_name];
+        const visuals = getVisuals(c.campaign_name);
+        const hasVisual = visuals.length > 0;
+        const firstThumb = visuals.find(v => v.thumbnail);
+        const rowType = c.row_type || 'campaign';
         html += `
-                <tr>
-                    <td title="${c.campaign_name}">${c.campaign_name.length > 35 ? c.campaign_name.slice(0, 33) + '...' : c.campaign_name}</td>
+                <tr data-row-name="${c.campaign_name}">
+                    <td title="${c.campaign_name}">${rowType === 'adset' ? '<span style="color:#7c3aed;font-size:0.7rem;margin-right:4px;">AD SET</span>' : ''}${c.campaign_name.length > 35 ? c.campaign_name.slice(0, 33) + '...' : c.campaign_name}</td>
                     <td><span class="channel-tag ${channelTagClass(c.channel)}">${channelLabel(c.channel)}</span></td>
                     <td class="text-center visual-cell">
                         <div class="visual-drop-zone ${hasVisual ? 'has-visual' : ''}"
@@ -1746,14 +1781,15 @@ function renderReport(data) {
                              ondragover="event.preventDefault(); this.classList.add('drag-over');"
                              ondragleave="this.classList.remove('drag-over');"
                              ondrop="handleVisualDrop(event, this);"
-                             onclick="handleVisualClick(this);">
+                             onclick="handleVisualClick(this);"
+                             ondblclick="event.stopPropagation(); toggleGallery('${c.campaign_name.replace(/'/g, "\\'")}', this.closest('tr'));">
                             ${hasVisual
-                                ? (hasVisual.thumbnail
-                                    ? `<img src="${hasVisual.thumbnail}" class="visual-thumb" />`
-                                    : (hasVisual.video_url ? '<span class="visual-icon">&#9654;</span>' : '<span class="visual-icon">&#10003;</span>'))
+                                ? (firstThumb
+                                    ? `<img src="${firstThumb.thumbnail}" class="visual-thumb" />${visuals.length > 1 ? '<span class="visual-multi-badge">+' + (visuals.length - 1) + '</span>' : ''}`
+                                    : '<span class="visual-icon">&#9654;</span>')
                                 : '<span class="visual-icon">+</span>'}
                         </div>
-                        <input type="file" accept="image/*" class="visual-file-input" id="vfi-${cid}" data-campaign="${c.campaign_name}" style="display:none" onchange="handleVisualFileSelect(event, this);">
+                        <input type="file" accept="image/*" multiple class="visual-file-input" id="vfi-${cid}" data-campaign="${c.campaign_name}" style="display:none" onchange="handleVisualFileSelect(event, this);">
                     </td>
                     <td class="text-right">${fmtCurrency(c.spend)}</td>
                     <td class="text-right">${fmt(c.impressions)}</td>
@@ -1799,23 +1835,28 @@ function setupSortableTable(tableId, campaigns) {
             tbody.innerHTML = '';
             for (const c of sorted) {
                 const cid = btoa(encodeURIComponent(c.campaign_name)).replace(/[^a-zA-Z0-9]/g, '');
-                const hasVisual = campaignVisuals[c.campaign_name];
+                const visuals2 = getVisuals(c.campaign_name);
+                const hasVisual2 = visuals2.length > 0;
+                const firstThumb2 = visuals2.find(v => v.thumbnail);
+                const rowType2 = c.row_type || 'campaign';
                 const tr = document.createElement('tr');
+                tr.setAttribute('data-row-name', c.campaign_name);
                 tr.innerHTML = `
-                    <td title="${c.campaign_name}">${c.campaign_name.length > 35 ? c.campaign_name.slice(0, 33) + '...' : c.campaign_name}</td>
+                    <td title="${c.campaign_name}">${rowType2 === 'adset' ? '<span style="color:#7c3aed;font-size:0.7rem;margin-right:4px;">AD SET</span>' : ''}${c.campaign_name.length > 35 ? c.campaign_name.slice(0, 33) + '...' : c.campaign_name}</td>
                     <td><span class="channel-tag ${channelTagClass(c.channel)}">${channelLabel(c.channel)}</span></td>
                     <td class="text-center visual-cell">
-                        <div class="visual-drop-zone ${hasVisual ? 'has-visual' : ''}"
+                        <div class="visual-drop-zone ${hasVisual2 ? 'has-visual' : ''}"
                              id="vdz-${cid}"
                              data-campaign="${c.campaign_name}"
                              ondragover="event.preventDefault(); this.classList.add('drag-over');"
                              ondragleave="this.classList.remove('drag-over');"
                              ondrop="handleVisualDrop(event, this);"
-                             onclick="handleVisualClick(this);">
-                            ${hasVisual
-                                ? (hasVisual.thumbnail
-                                    ? `<img src="${hasVisual.thumbnail}" class="visual-thumb" />`
-                                    : (hasVisual.video_url ? '<span class="visual-icon">&#9654;</span>' : '<span class="visual-icon">&#10003;</span>'))
+                             onclick="handleVisualClick(this);"
+                             ondblclick="event.stopPropagation(); toggleGallery('${c.campaign_name.replace(/'/g, "\\'")}', this.closest('tr'));">
+                            ${hasVisual2
+                                ? (firstThumb2
+                                    ? `<img src="${firstThumb2.thumbnail}" class="visual-thumb" />${visuals2.length > 1 ? '<span class="visual-multi-badge">+' + (visuals2.length - 1) + '</span>' : ''}`
+                                    : '<span class="visual-icon">&#9654;</span>')
                                 : '<span class="visual-icon">+</span>'}
                         </div>
                         <input type="file" accept="image/*" class="visual-file-input" id="vfi-${cid}" data-campaign="${c.campaign_name}" style="display:none" onchange="handleVisualFileSelect(event, this);">
@@ -2319,37 +2360,43 @@ function renderCopyAnalysis(data) {
     container.innerHTML = html;
 }
 
-// ===== Visual Creatives =====
+// ===== Visual Creatives (Multi-Visual + Gallery) =====
+function getVisuals(campaignName) {
+    if (!campaignVisuals[campaignName]) campaignVisuals[campaignName] = [];
+    return campaignVisuals[campaignName];
+}
+
 function handleVisualDrop(event, zone) {
     event.preventDefault();
     zone.classList.remove('drag-over');
     const campaignName = zone.dataset.campaign;
     const files = event.dataTransfer.files;
-    if (files.length > 0 && files[0].type.startsWith('image/')) {
-        processVisualFile(files[0], campaignName, zone);
+    for (let i = 0; i < files.length; i++) {
+        if (files[i].type.startsWith('image/')) {
+            addVisualFile(files[i], campaignName);
+        }
     }
 }
 
 function handleVisualClick(zone) {
     const campaignName = zone.dataset.campaign;
-    // Show a popover for image upload or video link
     const existing = document.getElementById('visual-popover');
     if (existing) existing.remove();
 
     const rect = zone.getBoundingClientRect();
+    const visuals = getVisuals(campaignName);
     const popover = document.createElement('div');
     popover.id = 'visual-popover';
     popover.className = 'visual-popover';
     popover.innerHTML = `
         <div class="visual-popover-title">${campaignName.length > 30 ? campaignName.slice(0, 28) + '...' : campaignName}</div>
         <label class="visual-popover-btn" style="cursor:pointer;">
-            <input type="file" accept="image/*" style="display:none" onchange="popoverFileSelect(event, '${campaignName.replace(/'/g, "\\'")}')"> Upload Screenshot
+            <input type="file" accept="image/*" multiple style="display:none" onchange="popoverFileSelect(event, '${campaignName.replace(/'/g, "\\'")}')"> Upload Screenshot(s)
         </label>
         <div class="visual-popover-divider">or</div>
-        <input type="text" class="visual-popover-input" placeholder="Paste Google Drive video link" id="video-link-input"
-               value="${campaignVisuals[campaignName]?.video_url || ''}">
-        <button class="visual-popover-save" onclick="saveVideoLink('${campaignName.replace(/'/g, "\\'")}')">Save Link</button>
-        ${campaignVisuals[campaignName] ? '<button class="visual-popover-remove" onclick="removeVisual(\'' + campaignName.replace(/'/g, "\\'") + '\')">Remove</button>' : ''}
+        <input type="text" class="visual-popover-input" placeholder="Paste Google Drive video link" id="video-link-input">
+        <button class="visual-popover-save" onclick="saveVideoLink('${campaignName.replace(/'/g, "\\'")}')">Add Video Link</button>
+        ${visuals.length > 0 ? '<button class="visual-popover-remove" onclick="clearAllVisuals(\'' + campaignName.replace(/'/g, "\\'") + '\')">Remove All</button>' : ''}
     `;
     popover.style.position = 'fixed';
     popover.style.top = (rect.bottom + 4) + 'px';
@@ -2357,7 +2404,6 @@ function handleVisualClick(zone) {
     popover.style.zIndex = '9999';
     document.body.appendChild(popover);
 
-    // Close on outside click
     setTimeout(() => {
         document.addEventListener('click', function closePopover(e) {
             if (!popover.contains(e.target) && e.target !== zone && !zone.contains(e.target)) {
@@ -2369,77 +2415,153 @@ function handleVisualClick(zone) {
 }
 
 function popoverFileSelect(event, campaignName) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const zone = document.querySelector(`.visual-drop-zone[data-campaign="${campaignName}"]`);
-    processVisualFile(file, campaignName, zone);
+    const files = event.target.files;
+    for (let i = 0; i < files.length; i++) {
+        if (files[i].type.startsWith('image/')) addVisualFile(files[i], campaignName);
+    }
     const popover = document.getElementById('visual-popover');
     if (popover) popover.remove();
 }
 
-function processVisualFile(file, campaignName, zone) {
+function addVisualFile(file, campaignName) {
     const reader = new FileReader();
     reader.onload = function(e) {
         const base64 = e.target.result.split(',')[1];
         const thumbnail = e.target.result;
-        campaignVisuals[campaignName] = {
+        getVisuals(campaignName).push({
             image_base64: base64,
             media_type: file.type || 'image/png',
             video_url: '',
             thumbnail: thumbnail,
-        };
-        zone.classList.add('has-visual');
-        zone.innerHTML = `<img src="${thumbnail}" class="visual-thumb" />`;
+        });
+        refreshVisualZone(campaignName);
         updateVisualCount();
     };
     reader.readAsDataURL(file);
 }
 
+function refreshVisualZone(campaignName) {
+    const zone = document.querySelector(`.visual-drop-zone[data-campaign="${CSS.escape(campaignName)}"]`);
+    if (!zone) return;
+    const visuals = getVisuals(campaignName);
+    if (visuals.length > 0) {
+        zone.classList.add('has-visual');
+        const first = visuals.find(v => v.thumbnail) || visuals[0];
+        if (first && first.thumbnail) {
+            zone.innerHTML = `<img src="${first.thumbnail}" class="visual-thumb" />${visuals.length > 1 ? '<span class="visual-multi-badge">+' + (visuals.length - 1) + '</span>' : ''}`;
+        } else {
+            zone.innerHTML = `<span class="visual-icon">&#9654;</span>${visuals.length > 1 ? '<span class="visual-multi-badge">+' + (visuals.length - 1) + '</span>' : ''}`;
+        }
+    } else {
+        zone.classList.remove('has-visual');
+        zone.innerHTML = '<span class="visual-icon">+</span>';
+    }
+    // Also refresh gallery if open
+    const galleryRow = document.getElementById('gallery-row-' + CSS.escape(campaignName));
+    if (galleryRow) renderGalleryRow(campaignName, galleryRow.querySelector('.visual-gallery-inner'));
+}
+
+function toggleGallery(campaignName, triggerRow) {
+    const existingId = 'gallery-row-' + CSS.escape(campaignName);
+    const existing = document.getElementById(existingId);
+    if (existing) { existing.remove(); return; }
+    const visuals = getVisuals(campaignName);
+    if (visuals.length === 0) return;
+    const galleryRow = document.createElement('tr');
+    galleryRow.id = existingId;
+    galleryRow.className = 'visual-gallery-row';
+    const colSpan = triggerRow.children.length;
+    galleryRow.innerHTML = `<td colspan="${colSpan}" style="padding:0;"><div class="visual-gallery-inner"></div></td>`;
+    triggerRow.after(galleryRow);
+    renderGalleryRow(campaignName, galleryRow.querySelector('.visual-gallery-inner'));
+}
+
+function renderGalleryRow(campaignName, container) {
+    const visuals = getVisuals(campaignName);
+    let html = '<div class="visual-gallery-grid">';
+    visuals.forEach((v, i) => {
+        if (v.thumbnail) {
+            html += `<div class="visual-gallery-item">
+                <img src="${v.thumbnail}" class="visual-gallery-img" />
+                <button class="visual-gallery-remove" onclick="removeVisual('${campaignName.replace(/'/g, "\\'")}', ${i})">×</button>
+            </div>`;
+        } else if (v.video_url) {
+            html += `<div class="visual-gallery-item visual-gallery-video">
+                <span class="visual-icon" style="font-size:24px;">&#9654;</span>
+                <div class="visual-gallery-url">${v.video_url.length > 25 ? v.video_url.slice(0,23) + '...' : v.video_url}</div>
+                <button class="visual-gallery-remove" onclick="removeVisual('${campaignName.replace(/'/g, "\\'")}', ${i})">×</button>
+            </div>`;
+        }
+    });
+    html += `<div class="visual-gallery-add" onclick="galleryAddClick('${campaignName.replace(/'/g, "\\'")}')">
+        <span style="font-size:20px;">+</span><span style="font-size:0.72rem;">Add</span>
+    </div>`;
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function galleryAddClick(campaignName) {
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = 'image/*';
+    inp.multiple = true;
+    inp.onchange = function() {
+        for (let i = 0; i < inp.files.length; i++) {
+            if (inp.files[i].type.startsWith('image/')) addVisualFile(inp.files[i], campaignName);
+        }
+    };
+    inp.click();
+}
+
 function handleVisualFileSelect(event, input) {
-    const file = event.target.files[0];
-    if (!file) return;
+    const files = event.target.files;
     const campaignName = input.dataset.campaign;
-    const zone = document.querySelector(`.visual-drop-zone[data-campaign="${campaignName}"]`);
-    processVisualFile(file, campaignName, zone);
+    for (let i = 0; i < files.length; i++) {
+        if (files[i].type.startsWith('image/')) addVisualFile(files[i], campaignName);
+    }
 }
 
 function saveVideoLink(campaignName) {
     const input = document.getElementById('video-link-input');
     const url = input.value.trim();
     if (!url) return;
-    const zone = document.querySelector(`.visual-drop-zone[data-campaign="${campaignName}"]`);
-    if (!campaignVisuals[campaignName]) {
-        campaignVisuals[campaignName] = {};
-    }
-    campaignVisuals[campaignName].video_url = url;
-    if (!campaignVisuals[campaignName].image_base64) {
-        zone.classList.add('has-visual');
-        zone.innerHTML = '<span class="visual-icon">&#9654;</span>';
-    }
+    getVisuals(campaignName).push({
+        image_base64: '',
+        media_type: '',
+        video_url: url,
+        thumbnail: '',
+    });
+    refreshVisualZone(campaignName);
     updateVisualCount();
     const popover = document.getElementById('visual-popover');
     if (popover) popover.remove();
 }
 
-function removeVisual(campaignName) {
+function removeVisual(campaignName, index) {
+    const visuals = getVisuals(campaignName);
+    visuals.splice(index, 1);
+    if (visuals.length === 0) delete campaignVisuals[campaignName];
+    refreshVisualZone(campaignName);
+    updateVisualCount();
+}
+
+function clearAllVisuals(campaignName) {
     delete campaignVisuals[campaignName];
-    const zone = document.querySelector(`.visual-drop-zone[data-campaign="${campaignName}"]`);
-    if (zone) {
-        zone.classList.remove('has-visual');
-        zone.innerHTML = '<span class="visual-icon">+</span>';
-    }
+    refreshVisualZone(campaignName);
     updateVisualCount();
     const popover = document.getElementById('visual-popover');
     if (popover) popover.remove();
 }
 
 function updateVisualCount() {
+    let totalVisuals = 0;
+    for (const arr of Object.values(campaignVisuals)) totalVisuals += arr.length;
     const count = Object.keys(campaignVisuals).length;
     const badge = document.getElementById('visual-count-badge');
     const btn = document.getElementById('btn-analyze-visuals');
-    if (count > 0) {
+    if (totalVisuals > 0) {
         badge.style.display = 'inline-block';
-        badge.textContent = count + ' visual' + (count > 1 ? 's' : '');
+        badge.textContent = totalVisuals + ' visual' + (totalVisuals > 1 ? 's' : '') + ' (' + count + ' rows)';
         btn.style.display = 'inline-block';
     } else {
         badge.style.display = 'none';
@@ -2453,15 +2575,17 @@ async function runVisualAnalysis() {
     btn.textContent = 'Analyzing...';
     btn.disabled = true;
 
-    // Build visuals data
+    // Build visuals data — flatten all visuals with their campaign/adset names
     const visuals = [];
-    for (const [name, v] of Object.entries(campaignVisuals)) {
-        visuals.push({
-            campaign_name: name,
-            image_base64: v.image_base64 || '',
-            media_type: v.media_type || 'image/png',
-            video_url: v.video_url || '',
-        });
+    for (const [name, arr] of Object.entries(campaignVisuals)) {
+        for (const v of arr) {
+            visuals.push({
+                campaign_name: name,
+                image_base64: v.image_base64 || '',
+                media_type: v.media_type || 'image/png',
+                video_url: v.video_url || '',
+            });
+        }
     }
 
     // Build campaign metrics lookup
