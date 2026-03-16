@@ -6,6 +6,10 @@ from backend.models import NormalizedCampaign
 COLUMN_MAP = {
     'campaign name': 'campaign_name',
     'campaign': 'campaign_name',
+    'ad set name': 'campaign_name',
+    'adset name': 'campaign_name',
+    'ad group name': 'campaign_name',
+    'ad set delivery': 'delivery_status',
     'impressions': 'impressions',
     'clicks (all)': 'clicks',
     'link clicks': 'clicks',
@@ -92,8 +96,9 @@ def parse(file_content: bytes) -> list[NormalizedCampaign]:
     header_row = 0
     for i, line in enumerate(lines):
         lower = line.lower()
-        if ('campaign' in lower or 'campaign name' in lower) and \
-           ('impressions' in lower or 'clicks' in lower or 'spend' in lower or 'cost' in lower or 'amount spent' in lower):
+        has_name_col = any(kw in lower for kw in ('campaign', 'campaign name', 'ad set name', 'adset name', 'ad group'))
+        has_metric_col = any(kw in lower for kw in ('impressions', 'clicks', 'spend', 'cost', 'amount spent'))
+        if has_name_col and has_metric_col:
             header_row = i
             break
 
@@ -116,6 +121,9 @@ def parse(file_content: bytes) -> list[NormalizedCampaign]:
         ('cpc (all)', 'avg_cpc'),
         ('cpc (cost per link click)', 'avg_cpc'),
         ('cpm (cost per 1,000 impressions)', 'cpm'),
+        ('cost per results', 'cost_per_conversion'),
+        ('cpc (cost per link click)', 'avg_cpc'),
+        ('ctr (link click-through rate)', 'ctr'),
         ('website purchases conversion value', 'conversion_value'),
         ('purchase value', 'conversion_value'),
         ('conversion value', 'conversion_value'),
@@ -138,7 +146,10 @@ def parse(file_content: bytes) -> list[NormalizedCampaign]:
     df = df.loc[:, ~df.columns.duplicated(keep='first')]
 
     if 'campaign_name' not in df.columns:
-        raise ValueError("Could not find 'Campaign Name' column in Meta Ads CSV. Please ensure your export includes campaign names.")
+        raise ValueError("Could not find 'Campaign Name' or 'Ad Set Name' column in Meta Ads CSV. Please ensure your export includes campaign or ad set names.")
+
+    # Detect if this is an ad-set-level export (has delivery_status or ad set indicators)
+    is_adset_level = 'delivery_status' in df.columns or any('ad set' in c.lower() for c in df.columns)
 
     df = df.dropna(subset=['campaign_name'])
 
@@ -212,6 +223,7 @@ def parse(file_content: bytes) -> list[NormalizedCampaign]:
         campaigns.append(NormalizedCampaign(
             campaign_name=cname,
             channel='meta_ads',
+            row_type='adset' if is_adset_level else 'campaign',
             impressions=impr,
             clicks=clicks,
             spend=spend,
